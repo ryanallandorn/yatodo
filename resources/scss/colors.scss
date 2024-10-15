@@ -1,0 +1,82 @@
+// resources/scss/colors.scss
+
+html body * {
+        --bs-accordion-active-bg: #{adjust-color-opacity($color-blue-primary, 0.05)} !important;
+        // --bs-accordion-active-bg-primary: #{$color-blue-primary} !important;
+        // --bs-accordion-active-bg-primary-again: #{$color-blue-primary} !important;
+        --bs-accordion-btn-focus-border-color: $color-green-secondary;
+        --bs-accordion-btn-focus-box-shadow: 0 0 0 0.25rem #{adjust-color-opacity($color-green-secondary, 0.125)} !important;
+        --bs-accordion-btn-color: #{adjust-color-opacity($color-green-secondary, 1)} !important;
+        --bs-accordion-active-color: #{adjust-color-opacity($color-green-secondary, 1)} !important;
+}
+
+
+$colors: (
+  "green": (
+    50: #f0fdf4,
+    100: #dcfce7,
+    200: #bbf7d0,
+    300: #86efac,
+    400: #4ade80,
+    500: #22c55e,
+    600: #16a34a,
+    700: #15803d,
+    800: #166534,
+    900: #14532d
+  ),
+  "blue": (
+    50: #eff6ff,
+    100: #dbeafe,
+    200: #bfdbfe,
+    300: #93c5fd,
+    400: #60a5fa,
+    500: #3b82f6,
+    600: #2563eb,
+    700: #1d4ed8,
+    800: #1e40af,
+    900: #1e3a8a
+  )
+  // Add more colors and shades as needed
+);
+
+@each $color, $shades in $colors {
+  @each $shade, $value in $shades {
+    .text-#{$color}-#{$shade} {
+      color: $value;
+    }
+
+    .bg-#{$color}-#{$shade} {
+      background-color: $value;
+    }
+  }
+}
+
+
+
+
+.logo {
+        /* Default logo color */
+        fill: $color-black;
+        stroke: $color-black;
+    
+        /* Dark theme logo color */
+        html[data-bs-theme="dark"] & {
+            fill: $color-white;
+            stroke: $color-white;
+        }
+    }
+    
+    
+    html[data-bs-theme="dark"] {
+    
+        #logo {
+          fill: $color-white;
+          stroke: $color-white;
+        }
+    
+    }
+
+
+    // .text-green {
+    //     color:$color-green;
+    // }

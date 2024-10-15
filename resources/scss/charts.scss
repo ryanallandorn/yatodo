@@ -1,0 +1,17 @@
+html body {
+    .chart-wrapper {}
+
+
+    .donut-inner {
+
+        display:flex;
+        flex-direction:column;
+
+        small {
+            opacity:0.66;
+        }
+        .metric-value {
+            font-size:2rem;
+        }
+    }
+}

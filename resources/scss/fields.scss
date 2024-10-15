@@ -1,0 +1,41 @@
+@function apply-opacity-to-decoration($color, $opacity) {
+    @return rgba($color, $opacity);
+  }
+  
+
+html body {
+    .field-editable {
+        text-decoration:underline;
+        text-decoration-style: dotted;
+        text-decoration-thickness: 3px;
+        text-decoration-color: #{adjust-color-opacity($color-green-secondary, 0.5)};
+        text-underline-offset: 3px;
+
+        &:hover {
+            text-decoration-color: #{adjust-color-opacity($color-green-secondary, 0.75)};
+            cursor: pointer;
+            &:after {
+                opacity:1;
+            }
+        }
+
+        &:after {
+            display: inline-block;
+            font-family: bootstrap-icons !important;
+            font-style: normal;
+            font-weight: normal !important;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            vertical-align: -.125em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            content: "\f4ca";
+            opacity:0.5;
+            font-size:0.9rem;
+            margin-left:0.5rem;
+            color: #{adjust-color-opacity($color-green-secondary, 1)};
+
+        }
+    }
+}

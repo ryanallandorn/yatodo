@@ -1,0 +1,77 @@
+// resources/scss/progress.scss
+
+html body {
+    .subway-progress-wrapper {
+
+        padding:0 1rem;
+        margin:1rem auto;
+        height:calc(2rem + 4px);
+        line-height:calc(2rem + 4px);
+
+
+        .progress,
+        .progress-stacked,
+        .progress-bar {
+            overflow:visible !important;
+            height:8px;
+        }
+
+        .progress-bar {
+            position:relative;
+            border:2px solid var(--bs-body-color);
+            margin:0 calc(1rem - 1px);
+
+            &.bg-empty {
+                background:var(--bs-body-bg);
+                background:transparent;
+                border-color:rgba(255,255,255,0.2);
+            }
+
+            .progress-link {
+                position:absolute;
+                left:calc(-2rem - 1px);
+                height:2rem;
+                width:2rem;
+                line-height:2rem;
+                display:flex;
+                align-items:center;
+                align-content:center;
+                display:block;
+                background:var(--bs-body-bg);
+                border-radius:100%;
+                text-decoration:none;
+                border:2px solid var(--bs-body-color);
+                color:var(--bs-body-color);
+                white-space:normal;
+                overflow-wrap: break-word;
+                hyphens: auto;
+                //z-index:-1;
+
+            }
+
+            &.complete,
+            &.active  {
+
+                .progress-link {
+                    &:before {
+                        content:"";
+                        height:1rem;
+                        width:1rem;
+                        position:absolute;
+                        background:var(--bs-body-color);
+                        z-index:1;
+                        display:block;
+                        top:50%;
+                        left:50%;
+                        margin-top:-0.5rem;
+                        margin-left:-0.5rem;
+                        border-radius:100%;
+                    }
+                }
+            }
+
+
+        }
+
+    }
+}

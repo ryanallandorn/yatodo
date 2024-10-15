@@ -1,0 +1,50 @@
+html body {
+    .dt-hasChild {
+        td {
+            //background:red;
+            background-color: adjust-color-opacity($color-blue-primary, 0.25) !important;
+            border-color: adjust-color-opacity($color-blue-primary, 0.9) !important;
+        }
+    }
+
+    .dt-collapse-row {
+        .collapse-icon {
+            &:before {
+                content: "\f282" !important
+              }
+        }
+    }
+
+    .dt-hasChild {
+        .dt-collapse-row {
+            .collapse-icon {
+                &:before {
+                    content: "\f286" !important
+                  }
+            }
+        }
+    }
+
+
+
+
+    .datatable-wrapper {
+
+
+        &, 
+        &.loading .loading-placeholder,
+        .data-table {
+            width:100% !important;
+            display:block !important;
+            flex-grow:1 !important;
+        }
+        
+    }
+
+    
+
+}
+
+
+
+

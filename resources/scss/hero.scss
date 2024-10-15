@@ -1,0 +1,19 @@
+html body {
+    .hero {
+        background:rgba(0,0,0,0.125);
+        box-shadow:$box-shadow-inset;
+
+        .hero-title {
+
+            small {
+                margin:0;
+            }
+
+            hr {
+                width:10rem;
+                margin:0.5rem auto;
+                border-style:dashed;
+            }
+        }
+    }
+}
