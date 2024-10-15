@@ -20,3 +20,9 @@ yarn-error.log
 /.idea
 /.vscode
 /.zed
+
+
+##
+
+/db_backups/daily/*
+/db_backups/hourly/*
