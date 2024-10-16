@@ -71,7 +71,9 @@
                         {/if}
                         <li><hr class="dropdown-divider"></li>
                         <li>
-                            <button use:inertia="{{ href: '/logout', method: 'post' }}" type="button">Logout</button>
+                            <button use:inertia="{{ href: '/logout', method: 'post' }}" type="button">
+                                {$t('Logout')}
+                            </button>
                         </li>
                 </ul>
             </div>
