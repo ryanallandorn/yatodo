@@ -16,7 +16,7 @@
 
 <Appbar />
 
-<div class="container-fluid d-flex flex-grow-1 p-0">
+<div class="container-fluid d-flex flex-grow-1 p-0 h-100">
 
     <Sidebar />
     <main class="flex-grow-1 d-flex flex-column ms-sm-auto">

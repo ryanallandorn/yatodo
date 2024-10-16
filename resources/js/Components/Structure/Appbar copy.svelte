@@ -6,7 +6,7 @@
     // import { logout } from '$lib/stores/auth'; // This should handle the logout API call
     import LogoFull from '@components/Branding/LogoFull.svelte';
     import LogoIcon from '@components/Branding/LogoIcon.svelte';
-    import ColorSwitcherAppbarNav from '@components/UI/ColorSwitcher/AppbarNav.svelte';
+    import ColorSwitcherAppbarNav from '@components/UI/States/ColorSwitcher/AppbarNav.svelte';
     // import Timer from '$lib/components/Timer.svelte'; // Your timer component
     // import DropdownMega from '$components/DropdownMega.svelte'; // Dropdown Mega component
     // import DropdownLink from '$components/DropdownLink.svelte'; // Link component for dropdown

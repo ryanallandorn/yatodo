@@ -2,6 +2,10 @@
 
 // resources/js/Components/Structure/Sidebar.svelte
 
+import BtnToggleCollapse from '@components/UI/States/BtnToggleCollapse.svelte';
+import { kebabCase } from 'lodash';
+
+
     let sidebarNav = [
         {
             name: 'Dashboard',
@@ -12,7 +16,7 @@
         {
             name: 'Projects',
             icon: 'bi bi-briefcase',
-            link: '/projects',
+            link: '/', //'/projects',
             children: []
         },
         {
@@ -28,37 +32,37 @@
             name: 'Bases',
             icon: 'bi bi-mortarboard',
             link: '/tasks',
-            children: [
-                { name: 'Completed', link: '/tasks#completed' },
-                { name: 'Overdue', link: '/tasks#overdue' }
-            ]
+            // children: [
+            //     { name: 'Completed', link: '/tasks#completed' },
+            //     { name: 'Overdue', link: '/tasks#overdue' }
+            // ]
         },
         {
             name: 'Tickets',
             icon: 'bi bi-life-preserver',
             link: '/tasks',
-            children: [
-                { name: 'Completed', link: '/tasks#completed' },
-                { name: 'Overdue', link: '/tasks#overdue' }
-            ]
+            // children: [
+            //     { name: 'Completed', link: '/tasks#completed' },
+            //     { name: 'Overdue', link: '/tasks#overdue' }
+            // ]
         },
         {
             name: 'Files',
             icon: 'bi bi-archive',
             link: '/tasks',
-            children: [
-                { name: 'Completed', link: '/tasks#completed' },
-                { name: 'Overdue', link: '/tasks#overdue' }
-            ]
+            // children: [
+            //     { name: 'Completed', link: '/tasks#completed' },
+            //     { name: 'Overdue', link: '/tasks#overdue' }
+            // ]
         },
         {
             name: 'Notes',
             icon: 'bi bi-sticky',
             link: '/notes',
-            children: [
-                { name: 'Completed', link: '/tasks#completed' },
-                { name: 'Overdue', link: '/tasks#overdue' }
-            ]
+            // children: [
+            //     { name: 'Completed', link: '/tasks#completed' },
+            //     { name: 'Overdue', link: '/tasks#overdue' }
+            // ]
         }
     ];
 
@@ -74,13 +78,30 @@
         <div class="offcanvas-body d-md-flex flex-column p-0 h-100">
             <ul class="nav flex-column">
                 {#each sidebarNav as navItem}
-                    <li class="nav-item">
+                    <li class="nav-item position-relative {navItem.children?.length > 0 ? 'has-children' : ''}">
                         <a class="nav-link d-flex align-items-center gap-2 text-light {navItem.link === currentRoute ? 'active' : ''}" href={navItem.link}>
                             <i class={`nav-icon ${navItem.icon} d-flex`}></i>
                             <span class="nav-text d-flex shrink-hide">{navItem.name}</span>
                         </a>
 
-                        {#if navItem.children.length > 0}
+                        {#if navItem.children?.length > 0}
+
+                        <button 
+                            class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed position-absolute translate-middle collapsed" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#{kebabCase(navItem.name)}-collapse" 
+                            aria-expanded="true"
+                        >
+                            <i class="bi bi-caret-down show-collapsed"></i>
+                            <i class="bi bi-caret-up hide-collapsed"></i>
+                        </button>
+
+                          <div class="collapse" id="{kebabCase(navItem.name)}-collapse">
+                            <!-- <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview</a></li>
+                              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates</a></li>
+                              <li><a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Reports</a></li>
+                            </ul> -->
                             <ul class="nav flex-column ms-3">
                                 {#each navItem.children as child}
                                     <li class="nav-item">
@@ -90,6 +111,10 @@
                                     </li>
                                 {/each}
                             </ul>
+                          </div>
+
+              
+                        
                         {/if}
                     </li>
                 {/each}
@@ -110,15 +135,8 @@
             </div>
         </div>
     </div>
-    <button 
-        type="button" 
-        class="btn btn-outline-secondary rounded-circle mt-3 p-0 position-absolute bottom-0 end-0" 
-        id="btn-sidebar-toggle" 
-        title="Collapse Sidebar"
-    >
-        <i class="bi bi-chevron-left shrink-hide"></i>
-        <i class="bi bi-chevron-right shrink-show"></i>
-    </button>
+    <BtnToggleCollapse />
+
 </div>
 
 <style>

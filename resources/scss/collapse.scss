@@ -1,0 +1,22 @@
+button {
+    &.collapsed {
+
+        .show-collapsed {
+            display: inline !important; // Show the down arrow when collapsed
+        }
+
+        .hide-collapsed {
+            display: none !important; // Hide the up arrow when collapsed
+        }
+    }
+
+    &:not(.collapsed) {
+        .show-collapsed {
+            display: none !important; // Hide the down arrow when expanded
+        }
+
+        .hide-collapsed {
+            display: inline !important; // Show the up arrow when expanded
+        }
+    }
+}

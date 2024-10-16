@@ -25,6 +25,8 @@ class InertiaBodyClasses
 
         $authClasses = 'd-flex align-items-center py-4 bg-body-tertiary guest auth';
 
+        //ray($routeName);
+
         switch ($routeName) {
             case 'login':
                 $bodyClasses = $authClasses;

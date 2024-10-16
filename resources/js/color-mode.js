@@ -1,3 +1,5 @@
+// resources/js/color-mode.js
+
 (() => {
     'use strict'
   
