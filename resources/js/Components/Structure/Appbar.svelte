@@ -8,6 +8,7 @@
     import LogoFull from '@components/Branding/LogoFull.svelte';
     import LogoIcon from '@components/Branding/LogoIcon.svelte';
     import ColorSwitcherAppbarNav from '@components/UI/States/ColorSwitcher/AppbarNav.svelte';
+    import AppbarUserNav from '@components/Structure/Appbar/UserNav.svelte';
     // import Timer from '$lib/components/Timer.svelte'; // Your timer component
     // import DropdownMega from '$components/DropdownMega.svelte'; // Dropdown Mega component
     // import DropdownLink from '$components/DropdownLink.svelte'; // Link component for dropdown
@@ -38,46 +39,7 @@
 
         <div class="d-flex align-items-center">
             <ColorSwitcherAppbarNav />
-
-            <div class="flex-shrink-0 dropdown me-3">
-                <a href="/" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    {#if $page.props.jetstream.managesProfilePhotos}
-                    <img
-                      class="h-8 w-8 rounded-full object-cover"
-                      src="{$page.props.auth.user.profile_photo_url}"
-                      alt="{$page.props.auth.user.name}"
-                    />
-                  {:else}
-                    <span>{$page.props.auth.user.name}</span>
-                  {/if}
-                </a>
-                <ul class="dropdown-menu text-small shadow">
-                        <li>
-                            <div class="dropdown-header">
-                                {$t('Manage Account')}
-                            </div>
-                        </li>
-                        <li>
-                            <Link href="{route('profile.show')}">
-                                {$t('Profile')}
-                            </Link>
-                        </li>
-                        {#if $page.props.jetstream.hasApiFeatures}
-                        <li>
-                            <Link href="{route('api-tokens.index')}">
-                                {$t('API Tokens')}
-                            </Link>
-                        </li>
-                        {/if}
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <button use:inertia="{{ href: '/logout', method: 'post' }}" type="button">
-                                {$t('Logout')}
-                            </button>
-                        </li>
-                </ul>
-            </div>
-
+            <AppbarUserNav />
         </div>
     </div>
 </header>

@@ -1,10 +1,7 @@
+<!-- /home/dorn/Dev/yatodo-inertia/resources/js/Layouts/App.svelte -->
+
 <script>
-
-// resources/js/Layouts/App.svelte
-
-    import { page, Link } from "@inertiajs/svelte";
-    import { router } from '@inertiajs/svelte';
-    //import Alert from "../Components/Alert.svelte";
+    import { router } from "@inertiajs/svelte";
     import Appbar from "@components/Structure/Appbar.svelte";
     import Sidebar from "@components/Structure/Sidebar.svelte";
     import Hero from "@components/Structure/Hero.svelte";
@@ -17,21 +14,21 @@
 <Appbar />
 
 <div class="container-fluid d-flex flex-grow-1 p-0 h-100">
-
     <Sidebar />
     <main class="flex-grow-1 d-flex flex-column ms-sm-auto">
-        <!-- Hero Slot (optional) -->
         {#if $$slots.hero}
             <Hero>
-                <slot name="hero"></slot> <!-- Named slot for the hero content -->
+                <slot name="hero" />
             </Hero>
         {/if}
 
         <div class="flex-grow-1 d-flex flex-column px-md-4 main-content">
-            <slot />
+            <slot /> <!-- Default slot for main content -->
         </div>
     </main>
 </div>
+
+
 
 <!-- <main class="container mx-auto md:w-[720px] my-6 px-6 md:my-12">
     <nav class="flex justify-between items-center border-b border-primary pb-2 mb-8">

@@ -2,6 +2,7 @@
 
 // resources/js/Pages/Auth/Login.svelte
 
+    import { Link } from "@inertiajs/svelte";
     import { t } from 'svelte-i18n';
 
     import { useForm } from "@inertiajs/svelte";
@@ -21,6 +22,8 @@
     // Components > Forms
     import ValidationErrors from '@components/Forms/ValidationErrors.svelte';
 
+    export let canResetPassword;
+    export let status;
 
     let form = useForm({
         email: '',
@@ -48,18 +51,23 @@
 
         <form on:submit|preventDefault={submit} class="form-auth text-center">
             <FieldText form={$form} name="email" id="email" label="{$t('Email')}" />
-            <FieldPassword form={$form} />
+            <FieldPassword form={$form} name="password" id="password"  label="{$t('Password')}" />
             <div class="block mt-4 text-center">
-                <FieldSwitch id="terms" name="terms" checked={true} className="d-inline-flex" required={true}>
+                <FieldSwitch id="remember" name="remember" checked={true} className="d-inline-flex" required={true}>
                     <div class="ms-2">
                         {$t('Remember me')}
                     </div>
                 </FieldSwitch>
             </div>
             <div class="flex items-center justify-end mt-4">
-                <Button type="submit"  disabled={form.processing} className="btn-lg btn-primary w-100 py-2 mb-2">
+                <Button type="submit" disabled={form.processing} cssClass="btn-lg btn-primary w-100 py-2 mb-2">
                     {$t('Log In')}
                 </Button>
+                {#if canResetPassword}
+                    <Link href={route('password.request')} class="mt-4 opacity-75">
+                        {$t('Forgot password?')}
+                    </Link>
+                {/if}
             </div>
         </form>
 

@@ -5,33 +5,38 @@
         export let form; // Accept the form object as a prop
         export let id = 'password'; // Default id for the input field
         export let name = 'password'; // Default name for the input field
+        export let attributes = {};
+        export let className = '';
+        export let fieldInputCss = '';
+        export let fieldWrapperCss = '';
+        export let label = ''; // Default label for the input field
         let showPassword = false; // Reactive variable to toggle password visibility
     </script>
     
     <div class="input-group position-relative">
-        <div class="form-floating">
+        <div class={`form-floating ${fieldWrapperCss}`}>
             <!-- Conditionally render based on showPassword -->
             {#if showPassword}
                 <input 
                     type="text" 
                     id={id}
                     name={name}
-                    bind:value={form.password}
+                    bind:value={form[name]}
                     placeholder="Password" 
-                    class="form-control"
+                    class={`form-control ${fieldInputCss}`}
                 >
             {:else}
                 <input 
                     type="password" 
                     id={id}
                     name={name}
-                    bind:value={form.password}
+                    bind:value={form[name]}
                     placeholder="Password" 
-                    class="form-control"
+                    class={`form-control ${fieldInputCss}`}
                 >
             {/if}
     
-            <label class="form-label" for="password">{$t('Password')}</label>
+            <label class="form-label" for="password">{label ?? $t('Password')}</label>
     
             {#if form.errors && form.errors.password} <!-- Conditionally render password errors -->
                 <div class="alert alert-danger field-error">{form.errors.password}</div>

@@ -18,12 +18,12 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import { addSpinner, removeSpinner } from './loading';
 import { showToast, handleCallbackMessages } from './toasts';
 
-document.querySelectorAll('[data-bs-toggle="collapse"]').forEach((toggle) => {
-    toggle.addEventListener('click', function () {
-        const icons = this.querySelectorAll('i');
-        icons.forEach((icon) => icon.classList.toggle('d-none'));
-    });
-});
+// document.querySelectorAll('[data-bs-toggle="collapse"]').forEach((toggle) => {
+//     toggle.addEventListener('click', function () {
+//         const icons = this.querySelectorAll('i');
+//         icons.forEach((icon) => icon.classList.toggle('d-none'));
+//     });
+// });
 
 
 

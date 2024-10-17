@@ -1,19 +1,30 @@
 <script>
 
-// resources/js/Components/Fields/Checkbox.svelte
+// resources/js/Components/Fields/Text.svelte
 
+    import { t } from 'svelte-i18n';
+    export let form; // Accept the form object as a prop
     export let id = null;
     export let name = null;
     export let attributes = {};
-    export let className = '';
-    export let checked = false;
+    export let fieldInputCss = '';
+    export let fieldWrapperCss = '';
+    export let label = ''; // Default label for the input field
 </script>
 
-<input 
-    type="checkbox" 
-    {...(id ? { id } : {})} 
-    {...(name ? { name } : {})} 
-    {...(Object.keys(attributes).length ? attributes : {})} 
-    class={`rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800 ${className}`}
-    bind:checked={checked}
-/>
+<div class="{`form-check ${fieldWrapperCss}`}">
+    <input 
+        type="checkbox" 
+        {...(id ? { id } : {})} 
+        {...(name ? { name } : {})} 
+        {...(Object.keys(attributes).length ? attributes : {})} 
+        bind:checked={form[name]}
+        class={`form-check-input ${fieldInputCss}`}
+    >
+    <label class="form-label" for={id}>
+        <slot></slot>
+    </label>
+    {#if form.errors && form.errors[name]}  <!-- Dynamically check for errors on the field -->
+        <div class="alert alert-danger field-error">{form.errors[name]}</div>
+    {/if}
+</div>

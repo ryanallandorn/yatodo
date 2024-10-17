@@ -26,5 +26,5 @@
         </label>
     {/if}
 
-    <slot></slot> <!-- Slot for additional content -->
+    <slot></slot>
 </div>

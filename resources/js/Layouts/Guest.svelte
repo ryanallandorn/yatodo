@@ -8,22 +8,18 @@
     //import Alert from "../Components/Alert.svelte";
     import Appbar from "@components/Structure/Appbar.svelte";
     import Sidebar from "@components/Structure/Sidebar.svelte";
+    import ColorSwitcherFloating from '@components/UI/States/ColorSwitcher/Floating.svelte';
 
     function logout() {
         router.post('/logout');
     }
 </script>
 
-
-
-
 <main class="form-auth { $page.url.startsWith('/login') ? 'form-signin' : ($page.url.startsWith('/register') ? 'form-register' : '') } w-100 m-auto">
-        
-    
-    
     <slot />
-
+    <ColorSwitcherFloating />
 </main>
+
 
 <!-- <main class="container mx-auto md:w-[720px] my-6 px-6 md:my-12">
     <nav class="flex justify-between items-center border-b border-primary pb-2 mb-8">

@@ -21,5 +21,9 @@ class AppServiceProvider extends ServiceProvider
     {
         //
         \App::setLocale(session('locale', 'en'));
+
+
+
+        
     }
 }

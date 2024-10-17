@@ -19,7 +19,7 @@ class InertiaBodyClasses
         $routeName = $request->route()?->getName();
 
         // Set default body classes
-        $bodyClasses = 'font-sans antialiased'; 
+        $bodyClasses = 'font-sans antialiased FCUK'; 
 
         // Define body classes based on the route
 
