@@ -1,40 +1,57 @@
+<!-- resources/js/Pages/Dashboard.svelte -->
+
 <script>
-
-// resources/js/Pages/Dashboard.svelte
-
     import { useForm } from "@inertiajs/svelte";
+    import { writable } from 'svelte/store';
+
     import App from "@layouts/App.svelte";
+    import Modal from '@components/Modal.svelte';
 
+    let modal; // Store the modal instance reference
 
-    let form = useForm({
-        email: '',
-        password: ''
-    });
+    const initialUser = { id: 1, name: 'Alice', email: 'alice@example.com' }; // Initial data
+    const userApiUrl = 'https://jsonplaceholder.typicode.com/users/1'; // API route
 
-    function submit() {
-        $form.post('/login', {
-            onSubmit: () => $form.reset('password'),
-        });
+    // Custom function to fetch user data
+    async function customFetchUser() {
+        return new Promise((resolve) =>
+            setTimeout(() => resolve({ id: 2, name: 'Bob', email: 'bob@example.com' }), 1000)
+        );
+    }
+
+    // Function to open the modal
+    function openUserModal() {
+        modal.open(); // Access the modal's `open` method through the bound instance
     }
 </script>
 
-<svelte:head>
-    <title>Log In</title>
-</svelte:head>
-
 <App>
+    <button class="btn btn-primary" on:click={openUserModal}>
+        Open User Modal
+    </button>
 
-    <!-- This content will be passed to the named "hero" slot -->
-    <div slot="hero" class="hero-contents">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            <i class="bi bi-speedometer2 me-2"></i> Dashboard
-        </h2>
-        <p>Additional content here, like a description or other elements.</p>
-    </div>
+    <Modal 
+        bind:this={modal}
+        initialData={initialUser} 
+        fetchUrl={userApiUrl} 
+        fetchOnLoad={customFetchUser}
+    >
+        <span slot="title">User Details</span>
 
-    <!-- Main content -->
-    <div>
-        <p>Welcome to the Dashboard!</p>
-    </div>
+        <div slot="staticContent">
+            <h5>Static Content</h5>
+            <p>This is additional static content inside the modal.</p>
+        </div>
 
+
+        <div slot="footer">
+            <button type="button" class="btn btn-secondary" on:click={() => console.log('Custom Close')}>
+                Custom Close
+            </button>
+            <button type="button" class="btn btn-primary">
+                Custom Save
+            </button>
+        </div>
+
+    </Modal>
 </App>

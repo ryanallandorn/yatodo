@@ -1,13 +1,13 @@
 <script setup>
 import { ref } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
-import ActionMessage from '@/Components/ActionMessage.vue';
-import ActionSection from '@/Components/ActionSection.vue';
+import ActionMessage from '@/Components/__ActionMessage.vue';
+import ActionSection from '@/Components/__ActionSection.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import DangerButton from '@/Components/DangerButton.vue';
-import DialogModal from '@/Components/DialogModal.vue';
-import FormSection from '@/Components/FormSection.vue';
-import InputError from '@/Components/InputError.vue';
+import DialogModal from '@/Components/__DialogModal.vue';
+import FormSection from '@/Components/__FormSection.vue';
+import InputError from '@/Components/__InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';

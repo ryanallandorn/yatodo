@@ -1,7 +1,6 @@
 <script>
 
-// resources/js/Components/Forms/FormSection.svelte
-
+// resources/js/Components/ActionSection.svelte
 
     import { createEventDispatcher } from 'svelte';
     import SectionTitle from '@components/SectionTitle.svelte';
@@ -28,17 +27,15 @@
         </SectionTitle>
     </div>
     <div class="col-md-9 mt-3">
-        <form on:submit|preventDefault={handleSubmit} class="card">
-            <div class={`p-4 ${$$slots.actions ? 'rounded-top' : 'rounded'}`}>
-                <div class="row g-3">
-                    <slot name="form"></slot>
-                </div>
+        <div class="card">
+            <div class="p-4">
+                <slot name="content" />
             </div>
             {#if $$slots.actions}
                 <div class="d-flex justify-content-end p-3 rounded-bottom card-footer">
                     <slot name="actions"></slot>
                 </div>
             {/if}
-        </form>
+        </div>
     </div>
 </div>

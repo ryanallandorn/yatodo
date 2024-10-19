@@ -53,7 +53,7 @@
             <FieldText form={$form} name="email" id="email" label="{$t('Email')}" />
             <FieldPassword form={$form} name="password" id="password"  label="{$t('Password')}" />
             <div class="block mt-4 text-center">
-                <FieldSwitch id="remember" name="remember" checked={true} className="d-inline-flex" required={true}>
+                <FieldSwitch form={$form} id="remember" name="remember" checked={true} className="d-inline-flex" required={true}>
                     <div class="ms-2">
                         {$t('Remember me')}
                     </div>

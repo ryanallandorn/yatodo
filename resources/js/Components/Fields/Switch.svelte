@@ -1,30 +1,30 @@
 <script>
-    // Props equivalent to Blade @props directive
-    export let id = 'switch';
-    export let name = 'switch';
-    export let label = null;
-    export let checked = false;
-    export let className = '';
-    export let required = false;
-    export let attributes = {};
-</script>
 
-<div class={`form-check form-switch ${className}`}>
-    <input 
-        class="form-check-input" 
-        type="checkbox" 
-        role="switch" 
-        id={id} 
-        name={name} 
-        bind:checked={checked} 
-        {...attributes} 
-    />
+    // resources/js/Components/Fields/Text.svelte
     
-    {#if label}
-        <label class="form-check-label" for={id}>
-            {label}
+        import { t } from 'svelte-i18n';
+        export let form; // Accept the form object as a prop
+        export let id = null;
+        export let name = null;
+        export let attributes = {};
+        export let fieldInputCss = '';
+        export let fieldWrapperCss = '';
+        export let label = ''; // Default label for the input field
+    </script>
+    
+    <div class="{`form-check form-switch ${fieldWrapperCss}`}">
+        <input 
+            type="checkbox" 
+            {...(id ? { id } : {})} 
+            {...(name ? { name } : {})} 
+            {...(Object.keys(attributes).length ? attributes : {})} 
+            bind:checked={form[name]}
+            class={`form-check-input ${fieldInputCss}`}
+        >
+        <label class="form-label" for={id}>
+            <slot></slot>
         </label>
-    {/if}
-
-    <slot></slot>
-</div>
+        {#if form.errors && form.errors[name]}  <!-- Dynamically check for errors on the field -->
+            <div class="alert alert-danger field-error">{form.errors[name]}</div>
+        {/if}
+    </div>

@@ -6,6 +6,9 @@
     import App from "@layouts/App.svelte";
 
     import UpdateProfileInformationForm from '@pages/Profile/Partials/UpdateProfileInformationForm.svelte';
+    import UpdatePasswordForm from '@pages/Profile/Partials/UpdatePasswordForm.svelte';
+    import TwoFactorAuthenticationForm from '@pages/Profile/Partials/TwoFactorAuthenticationForm.svelte';
+    import SectionBorder from '@components/SectionBorder.svelte'
 
 
 
@@ -28,9 +31,20 @@
     <!-- Main content -->
     <div class="page-content container py-5">
 
+        {#if $page.props.jetstream.canUpdateProfileInformation}
         <UpdateProfileInformationForm :user="$page.props.auth.user" />
+        <SectionBorder />
+        {/if}
 
+        {#if $page.props.jetstream.canUpdatePassword}
+        <UpdatePasswordForm :user="$page.props.auth.user" />
+        <SectionBorder />
+        {/if}
 
+        {#if $page.props.jetstream.canManageTwoFactorAuthentication}
+        <TwoFactorAuthenticationForm :user="$page.props.auth.user" />
+        <SectionBorder />
+        {/if}
         <!-- {#if $page.jetstream.hasAccountDeletionFeatures}
         {/if} -->
     </div>
