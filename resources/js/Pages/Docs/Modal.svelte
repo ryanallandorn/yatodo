@@ -1,7 +1,6 @@
+<!-- resources/js/Pages/Dashboard.svelte -->
+
 <script>
-
-// resources/js/Pages/Dashboard.svelte
-
     import { useForm } from "@inertiajs/svelte";
     import { writable } from 'svelte/store';
 
@@ -11,9 +10,16 @@
     let modal; // Store the modal instance reference
 
     const initialUser = { id: 1, name: 'Alice', email: 'alice@example.com' }; // Initial data
-    const userApiUrl = 'http://127.0.0.1:8000/api/get/users?filters[id]=2'; // API route
+    const userApiUrl = 'https://jsonplaceholder.typicode.com/users/1'; // API route
 
-    // Function to open the modal and trigger data fetch
+    // Custom function to fetch user data
+    async function customFetchUser() {
+        return new Promise((resolve) =>
+            setTimeout(() => resolve({ id: 2, name: 'Bob', email: 'bob@example.com' }), 1000)
+        );
+    }
+
+    // Function to open the modal
     function openUserModal() {
         modal.open(); // Access the modal's `open` method through the bound instance
     }
@@ -28,6 +34,7 @@
         bind:this={modal}
         initialData={initialUser} 
         fetchUrl={userApiUrl} 
+        fetchOnLoad={customFetchUser}
     >
         <span slot="title">User Details</span>
 
@@ -35,6 +42,7 @@
             <h5>Static Content</h5>
             <p>This is additional static content inside the modal.</p>
         </div>
+
 
         <div slot="footer">
             <button type="button" class="btn btn-secondary" on:click={() => console.log('Custom Close')}>
@@ -44,5 +52,6 @@
                 Custom Save
             </button>
         </div>
+
     </Modal>
 </App>

@@ -9,7 +9,7 @@
 
 <div class="md:col-span-1 flex justify-between">
     <div class="px-4 sm:px-0">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <h3 class="h5">
             {#if $$slots.title}
                 <slot name="title" />
             {:else}
@@ -17,7 +17,7 @@
             {/if}
         </h3>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-1 fw-light fs-7">
             {#if $$slots.description}
                 <slot name="description" />
             {:else}

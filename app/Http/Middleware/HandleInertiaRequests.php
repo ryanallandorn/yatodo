@@ -1,5 +1,7 @@
 <?php
 
+// app/Http/Middleware/HandleInertiaRequests.php
+
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
@@ -38,9 +40,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'appName' => config('app.name'),
             'csrfToken' => csrf_token(),
-            'auth.user' => fn () => $request->user()
-                ? $request->user()->only('id', 'name', 'email')
-                : null,
+            // 'auth.user' => fn () => $request->user()
+            //     ? $request->user()->only('id', 'name', 'email', 'profile_photo_url')
+            //     : null,
             'flash' => [
                 'message' => fn () => $request->session()->get('message')
             ],

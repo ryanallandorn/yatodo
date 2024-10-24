@@ -1,6 +1,7 @@
-<!-- /home/dorn/Dev/yatodo-inertia/resources/js/Layouts/App.svelte -->
-
 <script>
+
+//  resources/js/Layouts/App.svelte
+
     import { router } from "@inertiajs/svelte";
     import Appbar from "@components/Structure/Appbar.svelte";
     import Sidebar from "@components/Structure/Sidebar.svelte";

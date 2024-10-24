@@ -10,7 +10,7 @@
     import TwoFactorAuthenticationForm from '@pages/Profile/Partials/TwoFactorAuthenticationForm.svelte';
     import SectionBorder from '@components/SectionBorder.svelte'
 
-
+    $: user = $page.props.auth?.user;
 
 </script>
 
@@ -30,6 +30,11 @@
 
     <!-- Main content -->
     <div class="page-content container py-5">
+
+        <!-- <pre>
+            {JSON.stringify(user, null, 4)}
+        </pre> -->
+
 
         {#if $page.props.jetstream.canUpdateProfileInformation}
         <UpdateProfileInformationForm :user="$page.props.auth.user" />

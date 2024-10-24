@@ -1,0 +1,34 @@
+// Extended font size classes
+$font-sizes: (
+  7: 0.95rem,
+  8: 0.9rem, 
+  9: 0.85rem, 
+  10: 0.8rem, 
+  11: 0.75rem, 
+  12: 0.7rem, 
+);
+
+@each $size, $value in $font-sizes {
+  .fs-#{$size} {
+    font-size: $value !important;
+  }
+}
+
+// Responsive font size classes
+$breakpoints: (
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+@each $breakpoint, $width in $breakpoints {
+  @media (min-width: $width) {
+    @each $size, $value in $font-sizes {
+      .fs-#{$breakpoint}-#{$size} {
+        font-size: $value !important;
+      }
+    }
+  }
+}

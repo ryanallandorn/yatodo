@@ -5,4 +5,5 @@ return [
     App\Providers\FortifyServiceProvider::class,
     App\Providers\InertiaBodyClassesServiceProvider::class,
     App\Providers\JetstreamServiceProvider::class,
+    App\Providers\TaskServiceProvider::class,
 ];

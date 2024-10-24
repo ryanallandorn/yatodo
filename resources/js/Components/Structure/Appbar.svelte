@@ -28,6 +28,12 @@
     function handleLogout() {
         logout(); // Call the logout function from your store or API
     }
+
+    // Add a timestamp when the component loads
+    const loadTime = new Date().toLocaleTimeString();
+
+
+
 </script>
 
 <header id="header" class="fixed-top border-bottom bg-body-tertiary">
@@ -40,6 +46,11 @@
         <div class="d-flex align-items-center">
             <ColorSwitcherAppbarNav />
             <AppbarUserNav />
+
+            <span class="text-muted small">
+                Component loaded at: {loadTime}
+            </span>
+
         </div>
     </div>
 </header>
