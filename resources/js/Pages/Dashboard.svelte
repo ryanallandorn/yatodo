@@ -17,9 +17,21 @@
     function openUserModal() {
         modal.open(); // Access the modal's `open` method through the bound instance
     }
+
+    import TiptapEditor  from '@components/Fields/Tiptap/Editor.svelte';
+
+
 </script>
 
 <App>
+
+    <TiptapEditor
+    modelValue="<p>Hello, world!</p>"
+    autosave={true}
+    on:update={(event) => console.log('Editor content updated:', event.detail.value)}
+/>
+
+
     <button class="btn btn-primary" on:click={openUserModal}>
         Open User Modal
     </button>
