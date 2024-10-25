@@ -6,7 +6,7 @@
     import { writable } from 'svelte/store';
 
     import App from "@layouts/App.svelte";
-    import Modal from '@components/Modal.svelte';
+    import ModalBox from '@components/UI/Modal/Box.svelte';
 
     let modal; // Store the modal instance reference
 
@@ -24,7 +24,7 @@
         Open User Modal
     </button>
 
-    <Modal 
+    <ModalBox
         bind:this={modal}
         initialData={initialUser} 
         fetchUrl={userApiUrl} 
@@ -44,5 +44,5 @@
                 Custom Save
             </button>
         </div>
-    </Modal>
+    </ModalBox>
 </App>

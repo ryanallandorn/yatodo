@@ -7,12 +7,10 @@
     
         import { useForm, page, router } from '@inertiajs/svelte';
     
-        //
+        // Components
         import FormSection from '@components/Forms/FormSection.svelte';
         import ActionMessage from '@components/Forms/ActionMessage.svelte';
         import UserAvatar from '@components/User/Avatar.svelte';
-    
-        //
         import Button from '@components/UI/Buttons/Button.svelte';
         import FieldText from '@components/Fields/Text.svelte';
     

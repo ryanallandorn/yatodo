@@ -1,22 +1,21 @@
-
 <script>
-
-
-// resources/js/Components/ConfirmsPassword.svelte
-
-    import { onMount } from 'svelte'; // For focusing input on mount
+    import { t } from 'svelte-i18n';
     import { writable } from 'svelte/store';
-    import DialogModal from '@components/DialogModal.svelte';
-    import InputError from '@components/Forms/InputError.svelte'; 
+    import ModalDialog from '@components/UI/Modal/Dialog.svelte'; 
+    import InputError from '@components/Forms/InputError.svelte';
     import Button from '@components/UI/Buttons/Button.svelte';
-    import TextInput from '@components/Fields/Text.svelte';
+    import FieldPassword from '@components/Fields/Password.svelte';
     import axios from 'axios';
 
     export let title = 'Confirm Password';
     export let content = 'For your security, please confirm your password to continue.';
     export let button = 'Confirm';
 
-    const confirmingPassword = writable(false);
+    let showConfirmingPassword = false;
+    let confirmingPassword = false;
+
+    import {  tick, createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
 
     const form = writable({
         password: '',
@@ -24,17 +23,20 @@
         processing: false,
     });
 
-    let passwordInput;
-
+    let passwordInput = null;
     const startConfirmingPassword = async () => {
         try {
             const response = await axios.get(route('password.confirmation'));
             if (response.data.confirmed) {
-                confirmed();
+                //confirmed();
+                dispatch('confirmed'); 
+                alert(1);
             } else {
-                confirmingPassword.set(true);
-                await new Promise(resolve => setTimeout(resolve, 250));
-                passwordInput?.focus();
+                alert(2);
+                confirmingPassword = true;
+                showConfirmingPassword = true;
+                // await tick(); // Ensure DOM updates before focusing
+                // passwordInput?.focus(); 
             }
         } catch (error) {
             console.error('Error confirming password:', error);
@@ -47,61 +49,75 @@
             await axios.post(route('password.confirm'), { password: $form.password });
             form.update(f => ({ ...f, processing: false }));
             closeModal();
-            confirmed();
+            //confirmed();
+            dispatch('confirmed'); 
+            alert('confirmPassword: SUCCESS');
         } catch (error) {
+            alert('confirmPassword: FAIL');
             form.update(f => ({
                 ...f,
                 processing: false,
-                error: error.response.data.errors.password[0],
+                error: error.response?.data?.errors?.password?.[0] || 'Error confirming password',
             }));
-            passwordInput?.focus();
+            passwordInput?.focus(); 
         }
     };
 
     const closeModal = () => {
-        confirmingPassword.set(false);
+        confirmingPassword = false;
+        showConfirmingPassword = false;
         form.set({ password: '', error: '', processing: false });
     };
 
     function confirmed() {
         const event = new CustomEvent('confirmed');
-        dispatchEvent(event); // Emit the 'confirmed' event
+        dispatchEvent(event);
     }
 </script>
 
-<span>
-    <span on:click={startConfirmingPassword}>
-        <slot />
-    </span>
-
-    <DialogModal {confirmingPassword} on:close={closeModal}>
-        <h2 slot="title">{title}</h2>
-
-        <div slot="content">
-            <p>{content}</p>
-            <div class="mt-4">
-                <TextInput
-                    bind:this={passwordInput}
-                    bind:value={$form.password}
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="Password"
-                    autocomplete="current-password"
-                    on:keyup={(e) => e.key === 'Enter' && confirmPassword()}
-                />
-                <InputError message={$form.error} class="mt-2" />
-            </div>
-        </div>
-
-        <div slot="footer">
-            <Button on:click={closeModal}>Cancel</Button>
-            <Button
-                class={`ms-3 ${$form.processing ? 'opacity-25' : ''}`}
-                disabled={$form.processing}
-                on:click={confirmPassword}
-            >
-                {button}
-            </Button>
-        </div>
-    </DialogModal>
+<!-- Trigger for Password Confirmation -->
+<span on:click={startConfirmingPassword}>
+    <slot />
 </span>
+
+<!-- Password Confirmation Modal -->
+<ModalDialog
+    bind:show={showConfirmingPassword}
+    maxWidth="sm"
+    on:close={closeModal}
+>
+    <div slot="title">
+        {title}
+    </div>
+
+    <div slot="content">
+        <p>{content}</p>
+        <div class="mt-4">
+            <FieldPassword 
+                bind:this={passwordInput} 
+                form={$form} 
+                name="password" 
+                id="password" 
+                label="{$t('Password')}"
+            />
+            <InputError message={$form.error} class="mt-2" />
+        </div> <!-- Closing inner div -->
+    </div> <!-- Closing content slot -->
+
+    <div slot="footer">
+        <Button 
+            cssClass="btn-secondary" 
+            on:click={closeModal}
+        >
+            {$t('Cancel')}
+        </Button>
+
+        <Button
+            cssClass="btn-primary ms-3"
+            disabled={$form.processing}
+            on:click={confirmPassword}
+        >
+            {button}
+        </Button>
+    </div>
+</ModalDialog>

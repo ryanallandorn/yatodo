@@ -11,6 +11,7 @@
         export let fieldWrapperCss = '';
         export let label = ''; // Default label for the input field
         let showPassword = false; // Reactive variable to toggle password visibility
+        let inputRef;
     </script>
     
     <div class="input-group position-relative">
@@ -18,6 +19,7 @@
             <!-- Conditionally render based on showPassword -->
             {#if showPassword}
                 <input 
+                    bind:this={inputRef}
                     type="text" 
                     id={id}
                     name={name}
@@ -27,6 +29,7 @@
                 >
             {:else}
                 <input 
+                    bind:this={inputRef}
                     type="password" 
                     id={id}
                     name={name}

@@ -29,6 +29,7 @@
         "lodash": "^4.17.21",
         "node-ray": "^2.1.2",
         "nprogress": "^0.2.0",
+        "prismjs": "^1.29.0",
         "svelte-i18n": "^4.0.0",
         "vite-plugin-compression": "^0.5.1",
         "ziggy-js": "^2.3.0"

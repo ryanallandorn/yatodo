@@ -16,7 +16,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 ///import './color-mode';
 //import './sidebar';
 import { addSpinner, removeSpinner } from './loading';
-import { showToast, handleCallbackMessages } from './toasts';
+import { showToast, handleCallbackMessages } from './Scripts/toasts';
 
 // document.querySelectorAll('[data-bs-toggle="collapse"]').forEach((toggle) => {
 //     toggle.addEventListener('click', function () {

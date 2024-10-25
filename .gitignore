@@ -26,4 +26,5 @@ yarn-error.log
 
 /db_backups/daily/*
 /db_backups/hourly/*
+/db_backups/backup.log
 /.IGNORE/*

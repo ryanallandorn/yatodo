@@ -1,7 +1,4 @@
 <script>
-
-// resources/js/Components/UI/Modal/Dialog.svelte
-
     import ModalBox from '@components/UI/Modal/Box.svelte';
     import { createEventDispatcher, onMount } from 'svelte'; 
 

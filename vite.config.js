@@ -28,6 +28,7 @@ export default defineConfig({
             '@pages': path.resolve(__dirname, 'resources/js/Pages'),
             '@utils': path.resolve(__dirname, 'resources/js/Utils'),
             '@lang': path.resolve(__dirname, 'resources/js/Localization'),
+            '@scripts': path.resolve(__dirname, 'resources/js/Scripts'),
 		}
 	},
     // optimizeDeps: {  // PROD

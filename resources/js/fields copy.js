@@ -1,4 +1,4 @@
-import { showToast, handleCallbackMessages } from './toasts';
+import { showToast, handleCallbackMessages } from './Scripts/toasts';
 import { addNonBlockingSpinner, removeNonBlockingSpinner } from './loading';
 
 document.addEventListener('DOMContentLoaded', function () {

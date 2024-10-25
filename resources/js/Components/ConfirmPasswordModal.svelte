@@ -1,7 +1,7 @@
 <script>
     import { onMount, reactive } from 'svelte';
     import { createEventDispatcher } from 'svelte';
-    import DialogModal from './DialogModal.svelte';
+    import DialogModal from './__DialogModal.svelte';
     import InputError from './InputError.svelte';
     import PrimaryButton from './PrimaryButton.svelte';
     import SecondaryButton from './SecondaryButton.svelte';

@@ -42,15 +42,12 @@
             <LogoFull class="logo img-fluid logo-shrink shrink-hide m-auto mx-3" height="3rem" id="logo-svg" fill="blue" />
             <LogoIcon class="logo img-fluid logo-shrink shrink-show m-auto" height="3rem" id="logo-svg" fill="blue" />
         </a>
-
         <div class="d-flex align-items-center">
-            <ColorSwitcherAppbarNav />
-            <AppbarUserNav />
-
             <span class="text-muted small">
                 Component loaded at: {loadTime}
             </span>
-
+            <ColorSwitcherAppbarNav />
+            <AppbarUserNav />
         </div>
     </div>
 </header>
