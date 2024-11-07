@@ -5,6 +5,8 @@ namespace App\Services;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use InvalidArgumentException;
 
 class ApiQueryService
 {
@@ -59,13 +61,43 @@ class ApiQueryService
     /**
      * 
      */
-    public function applyFilters(Builder $query, array $filters = []): Builder
+    public function applyFilters(Builder $query, array $filters = [], string $targetTable): Builder
     {
-        foreach ($filters as $field => $value) {
-            is_array($value)
-                ? $query->whereBetween($field, $value)
-                : $query->where($field, $value);
+        // Early exit if no filters are provided
+        if (empty($filters)) {
+            return $query;
         }
+    
+        foreach ($filters as $field => $value) {
+            // Validate that the field exists in the table to prevent SQL injection
+            if (!Schema::hasColumn($targetTable, $field)) {
+                throw new InvalidArgumentException("Invalid filter field: {$field}");
+            }
+    
+            // Ensure the field is prefixed with the target table to avoid ambiguity
+            $prefixedField = "{$targetTable}.{$field}";
+
+
+
+            //Log::channel('debug')->info('Prefixed Field:', $prefixedField);
+            ray($prefixedField);
+    
+            // Handle range filters if the value is an array with exactly two numeric values
+            if (is_array($value) && count($value) === 2 && is_numeric($value[0]) && is_numeric($value[1])) {
+                $query->whereBetween($prefixedField, $value);
+                continue;
+            }
+    
+            // Handle simple equality filters for scalar values
+            if (is_scalar($value)) {
+                $query->where($prefixedField, $value);
+                continue;
+            }
+    
+            // Throw an exception for unsupported or invalid filter types
+            throw new InvalidArgumentException("Unsupported or invalid filter type for field: {$field}");
+        }
+    
         return $query;
     }
 

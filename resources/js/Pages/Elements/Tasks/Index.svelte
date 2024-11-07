@@ -33,7 +33,7 @@
             render: {
                 component: LinkViewModal,
                 props: {
-                    apiGetRoute: (item) => `/api/get/tasks?filters[id]=${item.id}`,
+                    apiGetRoute: (item) => `/api/get/task/${item.id}`,
                     displaySlot: (item) => item.name, 
                     modalTitle: (item) => item.name, 
                 }

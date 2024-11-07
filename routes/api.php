@@ -60,7 +60,9 @@ Route::prefix('get')->group(function () {
 
     Route::get('/users', [UserController::class, 'apiGet'])->name('api.get.users');
     Route::get('/projects', [ProjectController::class, 'apiGet'])->name('api.get.projects');
-    Route::get('/tasks', [TaskController::class, 'apiGet'])->name('api.get.tasks');
+    Route::get('/tasks', [TaskController::class, 'apiGetMultiple'])->name('api.get.tasks');
+    Route::get('/task/{id}', [TaskController::class, 'apiGetSingle'])->name('api.get.task');
+
 
     // Route::post('/get/tasks', [TaskController::class, 'store']);
     // Route::get('/get/tasks/{task}', [TaskController::class, 'show']);

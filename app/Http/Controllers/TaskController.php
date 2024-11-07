@@ -276,64 +276,63 @@ class TaskController extends Controller
     * =================================================================
     */ 
 
-    public function apiGet(Request $request, ApiQueryService $apiQueryService)
+    public function apiGetMultiple(Request $request, ApiQueryService $apiQueryService)
     {
         // Get search parameters from request
         $searchQuery = $request->get('searchQuery');
         $searchFields = $request->get('searchFields', []);
         $searchOperator = $request->get('searchOperator', 'AND');
-        
+        $primaryTable = 'tasks';
+    
         // Get filter parameters from request
         $filters = $request->get('filters', []);
-        
+    
         // Get IDs to exclude, ensure it's an array
         $filterExcludeIds = (array) $request->get('filterExcludeIds', []);
-        
+    
         // Get order parameters from request
-        $orderBy = $request->get('orderBy', 'id');
+        $orderBy = $request->get('orderBy', "{$primaryTable}.id");
         $orderDirection = $request->get('orderDirection', 'asc');
-        
+    
         // Get pagination parameters from request
         $limit = $request->get('limit', 10);
         $page = $request->get('page', 1);
-        
+    
         // Build the query using the service methods
         $tasksQuery = Task::query()
-        ->select('tasks.*', 'projects.id as project_id', 'projects.name as project_name') // Select task fields and project name
-        ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id'); // Join projects table
-
-
+            ->select('tasks.*', 'projects.id as project_id', 'projects.name as project_name')
+            ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id');
+    
         // Log the SQL query
         $sqlQuery = $tasksQuery->toSql();
         $bindings = $tasksQuery->getBindings();
-        Log::channel('debug')->info('SQL Query:', ['query' => $sqlQuery, 'bindings' => $bindings]);
-            
-
+        Log::channel('debug')->info('SQL Query before pagination:', ['query' => $sqlQuery, 'bindings' => $bindings]);
+    
         $tasksQuery = $apiQueryService->applySearch($tasksQuery, $searchQuery, $searchFields, $searchOperator);
-        $tasksQuery = $apiQueryService->applyFilters($tasksQuery, $filters);
-        
+        $tasksQuery = $apiQueryService->applyFilters($tasksQuery, $filters, $primaryTable);
+    
         // Exclude specific IDs
         if (!empty($filterExcludeIds)) {
             Log::channel('debug')->info('Excluding task IDs:', ['filterExcludeIds' => $filterExcludeIds]);
-            $tasksQuery->whereNotIn('id', $filterExcludeIds);
+            $tasksQuery->whereNotIn("{$primaryTable}.id", $filterExcludeIds); // Use "{$primaryTable}.id" for clarity
         }
-        
+    
         $tasksQuery = $apiQueryService->applyOrder($tasksQuery, $orderBy, $orderDirection);
-        
+    
         // Calculate total number of records before applying pagination
         $total = $tasksQuery->count();
-        
+    
         // Apply pagination
         $tasksQuery = $apiQueryService->applyPagination($tasksQuery, $limit, $page);
-        
+    
         // Log the SQL query
         $sqlQuery = $tasksQuery->toSql();
         $bindings = $tasksQuery->getBindings();
-        Log::channel('debug')->info('SQL Query:', ['query' => $sqlQuery, 'bindings' => $bindings]);
-        
+        Log::channel('debug')->info('SQL Query after pagination:', ['query' => $sqlQuery, 'bindings' => $bindings]);
+    
         // Execute the query and return results
         $tasks = $tasksQuery->get();
-        
+    
         // Return response with additional pagination information
         return response()->json([
             'items' => $tasks,
@@ -344,7 +343,29 @@ class TaskController extends Controller
     }
     
 
-
+    // Method for fetching a single task
+    public function apiGetSingle($id)
+    {
+        // Validate that an ID is provided (although not strictly necessary since it's part of the route)
+        if (!$id) {
+            return response()->json(['message' => 'Task ID is required'], 400);
+        }
+    
+        // Fetch the task by ID
+        $task = Task::query()
+            ->select('tasks.*', 'projects.id as project_id', 'projects.name as project_name')
+            ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id')
+            ->where('tasks.id', $id)
+            ->first();
+    
+        // Handle task not found
+        if (!$task) {
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+    
+        return response()->json(['item' => $task]);
+    }
+    
 
 
 }
