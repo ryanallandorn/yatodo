@@ -1,177 +1,175 @@
 <script>
-    import { onMount, createEventDispatcher } from 'svelte';
-    import { writable } from 'svelte/store';
+    import { onMount, onDestroy } from 'svelte';
+
+    //
     import { Editor } from '@tiptap/core';
-    import StarterKit from '@tiptap/starter-kit';
-    import Highlight from '@tiptap/extension-highlight';
-    import TaskItem from '@tiptap/extension-task-item';
-    import TaskList from '@tiptap/extension-task-list';
-    import CharacterCount from '@tiptap/extension-character-count';
-    import Mention from '@tiptap/extension-mention';
-    import * as Y from 'yjs';
+    import Table from '@tiptap/extension-table';
+    import TableCell from '@tiptap/extension-table-cell';
+    import TableHeader from '@tiptap/extension-table-header';
+    import TableRow from '@tiptap/extension-table-row';
+    //import StarterKit from '@tiptap/starter-kit';
+    import BulletList from '@tiptap/extension-bullet-list'
+    import Document from '@tiptap/extension-document'
+    import ListItem from '@tiptap/extension-list-item'
+    import OrderedList from '@tiptap/extension-ordered-list'
+    import Paragraph from '@tiptap/extension-paragraph'
+    import Text from '@tiptap/extension-text'
+    import { BubbleMenu as TiptapBubbleMenu } from '@tiptap/extension-bubble-menu';
 
-    import { updateField } from '@scripts/fieldHandlers.js';
-    import suggestion from '@scripts/suggestion.js';
-    import MenuBar from '@components/Fields/Tiptap/MenuBar.svelte';
-    import EditorContent from '@components/Fields/Tiptap/EditorContent.svelte'; // Import the custom wrapper
+    // Components
+    import EditorContent from '@components/Fields/Tiptap/EditorContent.svelte';
+    import MenuBar from '@components/Fields/Tiptap/ControlBar.svelte';
 
-    export let modelValue = '';
-    export let itemId;
-    export let fieldName;
-    export let modelName;
-    export let elementName;
-    export let autosave = false;
-    export let collaborative = false;
-
-    const editorData = writable(modelValue);
-    const currentUser = writable(
-        JSON.parse(localStorage.getItem('currentUser')) || {
-            name: getRandomName(),
-            color: getRandomColor(),
-        }
-    );
-    const provider = writable(null);
-    const status = writable('connecting');
-    const room = writable(getRandomRoom());
-
-    const dispatch = createEventDispatcher();
     let editor;
+    let element;
 
-    const sharedExtensions = [
-        StarterKit.configure({ history: false }),
-        Highlight,
-        TaskList,
-        TaskItem,
-        CharacterCount.configure({ limit: 10000 }),
-        Mention.configure({
-            HTMLAttributes: { class: 'mention' },
-            suggestion,
-        }),
-    ];
-
-    async function loadCollaborationExtensions() {
-        const { TiptapCollabProvider } = await import('@hocuspocus/provider');
-        const { default: Collaboration } = await import('@tiptap/extension-collaboration');
-        const { default: CollaborationCursor } = await import('@tiptap/extension-collaboration-cursor');
-        const ydoc = new Y.Doc();
-
-        const collabProvider = new TiptapCollabProvider({
-            appId: '7j9y6m10',
-            name: $room,
-            document: ydoc,
-        });
-
-        collabProvider.on('status', event => {
-            status.set(event.status);
-        });
-
-        provider.set(collabProvider);
-
-        return [
-            Collaboration.configure({ document: ydoc }),
-            CollaborationCursor.configure({
-                provider: collabProvider,
-                user: $currentUser,
-            }),
-        ];
-    }
-
-    async function initializeEditor() {
-        const extensions = [...sharedExtensions];
-        if (collaborative) {
-            const collaborationExtensions = await loadCollaborationExtensions();
-            extensions.push(...collaborationExtensions);
-        }
-
-        editor = new Editor({
-            extensions,
-            content: modelValue,
-            element: document.createElement('div'),
-            onUpdate: ({ editor }) => {
-                updateValue(editor.getHTML());
-            },
-        });
-
-        localStorage.setItem('currentUser', JSON.stringify($currentUser));
-    }
-
-    function setName() {
-        const name = (window.prompt('Name') || '').trim().substring(0, 32);
-        if (name) {
-            updateCurrentUser({ name });
-        }
-    }
-
-    function updateCurrentUser(attributes) {
-        const newUser = { ...$currentUser, ...attributes };
-        currentUser.set(newUser);
-        editor.chain().focus().updateUser(newUser).run();
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
-    }
-
-    async function updateValue(newVal) {
-        dispatch('update', { modelValue: newVal });
-        if (autosave) {
-            try {
-                await updateField(elementName, itemId, fieldName, newVal);
-                console.log(`Successfully updated ${fieldName} for item ${itemId}`);
-            } catch (error) {
-                console.error(`Error updating ${fieldName}:`, error);
+    // Custom Table Cell Extension with background color support
+    const CustomTableCell = TableCell.extend({
+        addAttributes() {
+            return {
+                ...this.parent?.(),
+                backgroundColor: {
+                    default: null,
+                    parseHTML: element => element.getAttribute('data-background-color'),
+                    renderHTML: attributes => ({
+                        'data-background-color': attributes.backgroundColor,
+                        style: `background-color: ${attributes.backgroundColor}`,
+                    })
+                },
             }
-        }
-    }
-
-    onMount(() => {
-        initializeEditor();
-        return () => {
-            editor?.destroy();
-            if (collaborative) provider?.value?.destroy();
-        };
+        },
     });
 
-    $: if (editor && modelValue !== editor.getHTML()) {
-        editor.commands.setContent(modelValue);
-    }
+    const CustomListItem = ListItem.configure({
+        keepMarks: true,
+        keepAttributes: false,
+        HTMLAttributes: {
+            class: 'list-item',
+        },
+    });
 
-    function getRandomElement(list) {
-        return list[Math.floor(Math.random() * list.length)];
-    }
+    const CustomTable = Table.extend({
+        resizable: true,
+        renderHTML({ HTMLAttributes }) {
+            return ['table', { 
+                class: 'table table-bordered table-striped table-striped-columnstable-responsive',
+                ...HTMLAttributes 
+            }, ['tbody', 0]];
+        }
+    });
 
-    function getRandomColor() {
-        return getRandomElement([
-            '#958DF1', '#F98181', '#FBBC88', '#FAF594',
-            '#70CFF8', '#94FADB', '#B9F18D',
-        ]);
-    }
+    const tableHTML = `
+        <table style="width:100%">
+            <tr>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>Age</th>
+            </tr>
+            <tr>
+                <td>Jill</td>
+                <td>Smith</td>
+                <td>50</td>
+            </tr>
+            <tr>
+                <td>Eve</td>
+                <td>Jackson</td>
+                <td>94</td>
+            </tr>
+            <tr>
+                <td>John</td>
+                <td>Doe</td>
+                <td>80</td>
+            </tr>
+        </table>`;
 
-    function getRandomName() {
-        return getRandomElement([
-            'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna',
-            'Jerry Hall', 'Joan Collins', 'Winona Ryder', 'Christina Applegate',
-            'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry',
-            'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose',
-            'Emilio Estevez', 'Ralph Macchio', 'Rob Lowe', 'Jennifer Grey',
-            'Mickey Rourke', 'John Cusack', 'Matthew Broderick', 'Justine Bateman',
-            'Lisa Bonet',
-        ]);
-    }
+    onMount(() => {
+        editor = new Editor({
+            element: element,
+            extensions: [
+                StarterKit.configure({
+                    history: true,
+                    listItem: false,  // Disable default listItem to use our custom one
+                }),
+                CustomListItem,
+                CustomTable,
+                TableRow,
+                TableHeader,
+                CustomTableCell,
+                TiptapBubbleMenu.configure({
+                    element: element.querySelector('.bubble-menu-container'),
+                    shouldShow: ({ editor }) => editor.isActive('tableCell'),
+                }),
+            ],
+            editorProps: {
+                handleKeyDown: ({ event }) => {
+                    if (event.key === 'Tab') {
+                        if (editor.isActive('listItem')) {
+                            if (event.shiftKey) {
+                                // Dedent on Shift+Tab
+                                editor.chain().focus().liftListItem('listItem').run();
+                            } else {
+                                // Indent on Tab
+                                editor.chain().focus().sinkListItem('listItem').run();
+                            }
+                            event.preventDefault();
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+            },
+            content: `
+                <h3>Have you seen our tables? They are amazing!</h3>
+                <ul>
+                    <li>Tables with rows, cells and headers (optional)</li>
+                    <li>Support for <code>colgroup</code> and <code>rowspan</code></li>
+                    <li>And even resizable columns (optional)</li>
+                </ul>
+                <p>Here is an example:</p>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th colspan="3">Description</th>
+                        </tr>
+                        <tr>
+                            <td>Cyndi Lauper</td>
+                            <td>Singer</td>
+                            <td>Songwriter</td>
+                            <td>Actress</td>
+                        </tr>
+                        <tr>
+                            <td>Marie Curie</td>
+                            <td>Scientist</td>
+                            <td>Chemist</td>
+                            <td>Physicist</td>
+                        </tr>
+                        <tr>
+                            <td>Indira Gandhi</td>
+                            <td>Prime minister</td>
+                            <td colspan="2">Politician</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `,
+            onTransaction: () => {
+                editor = editor;
+            }
+        });
+    });
 
-    function getRandomRoom() {
-        const rooms = [10, 11, 12].map(number => `rooms.${number}`);
-        return getRandomElement(rooms);
-    }
+    onDestroy(() => {
+        if (editor) {
+            editor.destroy();
+        }
+    });
 </script>
 
-<div class="editor border-thin">
-    <MenuBar class="editor__header border-b-thin" {editor} />
-    <EditorContent {editor} />
+<div class="card m-2">
+    {#if editor}
+    <div class="card-header">
+        <MenuBar {editor} />
+    </div>
+    {/if}
+    <div class="card-body" bind:this={element} />
 </div>
-
-<style>
-.mention {
-    border: 1px solid #000;
-    border-radius: 0.4rem;
-    padding: 0.1rem 0.3rem;
-    box-decoration-break: clone;
-}
-</style>

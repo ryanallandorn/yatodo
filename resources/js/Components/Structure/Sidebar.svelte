@@ -16,7 +16,7 @@ import { kebabCase } from 'lodash';
         {
             name: 'Projects',
             icon: 'bi bi-briefcase',
-            link: '/', //'/projects',
+            link: '/projects',
             children: []
         },
         {

@@ -1,9 +1,6 @@
 <script>
-
-// resources/js/Pages/Profile/Partials/TwoFactorAuthenticationForm.svelte
-
     import { t } from 'svelte-i18n';
-    import { writable } from 'svelte/store';
+    import { writable, derived } from 'svelte/store';
     import { router, useForm, page } from '@inertiajs/svelte'; 
     import ActionSection from '@components/Forms/ActionSection.svelte';
     import ActionMessage from '@components/Forms/ActionMessage.svelte';
@@ -14,46 +11,37 @@
 
     export let requiresConfirmation = false;
 
-    // // Reactive state
-    // let enabling = writable(false);
-    // let confirming = writable(false);
-    // let twoFactorEnabled = writable(false);
-    // let disabling = writable(false);
-    // let qrCode = writable(false);
-    // let setupKey = writable(false);
-    // let recoveryCodes = [];
+    // Create stores for reactive state
+    const enabling = writable(false);
+    const confirming = writable(false);
+    const disabling = writable(false);
+    const qrCode = writable(null);
+    const setupKey = writable(null);
+    const recoveryCodes = writable([]);
 
-    // let enabling = false;
-    // let confirming = false;
-    // let disabling = false;
-    // let qrCode = null;
-    // let setupKey = null;
-    // let recoveryCodes = [];
-
-
-    let enabling = writable(false);
-    let confirming = writable(false);
-    let twoFactorEnabled = writable(false);
-    let disabling = writable(false);
-    let qrCode = writable(null);
-    let setupKey = writable(null);
-    let recoveryCodes = writable([]);
-
-    // Computed equivalent
-    $: twoFactorEnabled = !enabling && $page?.props?.auth?.user?.two_factor_enabled;
-
-    // Watch equivalent
-    $: if (!twoFactorEnabled) {
-        confirmationForm.reset?.();      // Optional chaining to avoid errors
-        confirmationForm.clearErrors?.(); // Optional chaining
-    }
+    // Derive twoFactorEnabled from page store and enabling state
+    const twoFactorEnabled = derived(
+        [page, enabling],
+        ([$page, $enabling]) => !$enabling && $page?.props?.auth?.user?.two_factor_enabled
+    );
 
     const confirmationForm = useForm({
         code: '',
     });
 
+    // Watch equivalent using subscription
+    twoFactorEnabled.subscribe(value => {
+        if (!value) {
+            confirmationForm.reset?.();
+            confirmationForm.clearErrors?.();
+        }
+    });
+
+
+
     const enableTwoFactorAuthentication = () => {
-        enabling = true;
+        enabling.set(true);
+        
         router.post(route('two-factor.enable'), {}, {
             preserveScroll: true,
             onSuccess: () => Promise.all([
@@ -62,28 +50,25 @@
                 showRecoveryCodes(),
             ]),
             onFinish: () => {
-                enabling = false;
-                confirming = requiresConfirmation;
+                enabling.set(false);
+                confirming.set(requiresConfirmation);
             },
         });
     };
 
-    const showQrCode = () => {
-        return axios.get(route('two-factor.qr-code')).then(response => {
-            qrCode = response.data.svg;
-        });
+    const showQrCode = async () => {
+        const response = await axios.get(route('two-factor.qr-code'));
+        qrCode.set(response.data.svg);
     };
 
-    const showSetupKey = () => {
-        return axios.get(route('two-factor.secret-key')).then(response => {
-            setupKey = response.data.secretKey;
-        });
-    }
+    const showSetupKey = async () => {
+        const response = await axios.get(route('two-factor.secret-key'));
+        setupKey.set(response.data.secretKey);
+    };
 
-    const showRecoveryCodes = () => {
-        return axios.get(route('two-factor.recovery-codes')).then(response => {
-            recoveryCodes = response.data;
-        });
+    const showRecoveryCodes = async () => {
+        const response = await axios.get(route('two-factor.recovery-codes'));
+        recoveryCodes.set(response.data);
     };
 
     const confirmTwoFactorAuthentication = () => {
@@ -92,31 +77,29 @@
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
-                confirming = false;
-                qrCode = null;
-                setupKey = null;
+                confirming.set(false);
+                qrCode.set(null);
+                setupKey.set(null);
             },
         });
     };
 
     const regenerateRecoveryCodes = () => {
-        axios
-            .post(route('two-factor.recovery-codes'))
+        axios.post(route('two-factor.recovery-codes'))
             .then(() => showRecoveryCodes());
     };
 
     const disableTwoFactorAuthentication = () => {
-        disabling = true;
+        disabling.set(true);
 
         router.delete(route('two-factor.disable'), {
             preserveScroll: true,
             onSuccess: () => {
-                disabling = false;
-                confirming = false;
+                disabling.set(false);
+                confirming.set(false);
             },
         });
     };
-
 </script>
 
 <ActionSection>
@@ -125,16 +108,11 @@
         {$t('Add additional security to your account using two-factor authentication.')}
     </div>
     <div slot="content">
-
-        <pre>{JSON.stringify($page?.props?.auth?.user?.two_factor_enabled, null, 4)}</pre>
-
-        <pre>{JSON.stringify($page?.props?.auth?.user?.two_factor_enabled, null, 4)}</pre>
-
-        {#if twoFactorEnabled && !confirming}
+        {#if $twoFactorEnabled && !$confirming}
             <h3 class="h5">
                 {$t('You have enabled two-factor authentication.')}
             </h3>
-        {:else if twoFactorEnabled && confirming}
+        {:else if $twoFactorEnabled && $confirming}
             <h3 class="h5">
                 {$t('Finish enabling two-factor authentication.')}
             </h3>
@@ -150,100 +128,99 @@
             </div>
         </div>
 
-        {#if twoFactorEnabled}
-
-            {#if qrCode}
+        {#if $twoFactorEnabled}
+            {#if $qrCode}
                 <div class="mt-4 text-body-secondary">
-                    {#if confirming}
+                    {#if $confirming}
                         <div class="alert alert-info" role="alert">
-                        {$t('To finish enabling two-factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.')}
+                            {$t('To finish enabling two-factor authentication, scan the following QR code using your phone\'s authenticator application or enter the setup key and provide the generated OTP code.')}
                         </div>
                     {:else}
-                    <div class="alert alert-info" role="alert">
-                        {$t('Two-factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.')}
+                        <div class="alert alert-info" role="alert">
+                            {$t('Two-factor authentication is now enabled. Scan the following QR code using your phone\'s authenticator application or enter the setup key.')}
                         </div>
                     {/if}
                 </div>
                 
-                <!-- Display the QR code -->
                 <div class="mt-4 p-2 d-inline-block bg-white">
-                    {@html qrCode}
+                    {@html $qrCode}
                 </div>
                 
-                <!-- Conditionally render the setup key -->
-                {#if setupKey}
+                {#if $setupKey}
                     <div class="mt-4 text-body-secondary">
-                        <p class="fw-semibold">
-                            <CodeBlock language="plaintext">
-                                <span slot="title">Setup Key</span>
-                                {@html setupKey.trim()}
-                            </CodeBlock>
-                        </p>
+                        <CodeBlock language="plaintext">
+                            <span slot="title">Setup Key</span>
+                            {@html $setupKey.trim()}
+                        </CodeBlock>
                     </div>
                 {/if}
 
-                {#if confirming}
-
-    
-                <FieldText 
-                    form={$confirmationForm} 
-                    name="code" 
-                    id="code" 
-                    inputmode="numeric"
-                    label="{$t('Code')}" 
-                />
-
+                {#if $confirming}
+                    <FieldText 
+                        form={$confirmationForm} 
+                        name="code" 
+                        id="code" 
+                        inputmode="numeric"
+                        label="{$t('Code')}" 
+                    />
                 {/if}
-
             {/if}
 
+            {#if $recoveryCodes.length > 0 && !$confirming}
+                <div class="mt-4 text-body-secondary">
+                    <div class="alert alert-warning" role="alert">
+                        {$t('Store these recovery codes in a secure password manager. They can be used to recover access to your account if your two factor authentication device is lost.')}
+                    </div>
+                    <CodeBlock language="plaintext">
+                        <span slot="title">Recovery Codes</span>
+                        {@html $recoveryCodes.join('\n')}
+                    </CodeBlock>
+                </div>
+            {/if}
         {/if}
-
-
     </div>
-    <div slot="actions">
 
-        {#if !twoFactorEnabled}
+    <div slot="actions">
+        {#if !$twoFactorEnabled}
             <ConfirmsPassword on:confirmed={enableTwoFactorAuthentication}>
-                <Button cssClass="btn-outline-warning">{$t('Enable')}</Button>
+                <Button cssClass="btn-outline-warning" disabled={$enabling}>
+                    {$t('Enable')}
+                </Button>
             </ConfirmsPassword>
         {:else}
-            {#if confirming}
-            <ConfirmsPassword on:confirmed={disableTwoFactorAuthentication}>
-                <Button cssClass="btn-outline-secondary">{$t('Cancel')}</Button>
-            </ConfirmsPassword>
-            <ConfirmsPassword on:confirmed={confirmTwoFactorAuthentication}>
-                <Button cssClass="btn-outline-warning">{$t('Confirm')}</Button>
-            </ConfirmsPassword>
+            {#if $confirming}
+                <ConfirmsPassword on:confirmed={disableTwoFactorAuthentication}>
+                    <Button cssClass="btn-outline-secondary" disabled={$disabling}>
+                        {$t('Cancel')}
+                    </Button>
+                </ConfirmsPassword>
+                <ConfirmsPassword on:confirmed={confirmTwoFactorAuthentication}>
+                    <Button cssClass="btn-outline-warning" disabled={$enabling}>
+                        {$t('Confirm')}
+                    </Button>
+                </ConfirmsPassword>
             {/if}
-            {#if recoveryCodes.length > 0 && ! confirming}
-            <ConfirmsPassword on:confirmed={regenerateRecoveryCode}>
-                <Button cssClass="btn-outline-warning">{$t('Regenerate Recovery Codes')}</Button>
-            </ConfirmsPassword>
+            {#if $recoveryCodes.length > 0 && !$confirming}
+                <ConfirmsPassword on:confirmed={regenerateRecoveryCodes}>
+                    <Button cssClass="btn-outline-warning">
+                        {$t('Regenerate Recovery Codes')}
+                    </Button>
+                </ConfirmsPassword>
             {/if}
-            {#if recoveryCodes.length === 0 && ! confirming}
-            <ConfirmsPassword on:confirmed={showRecoveryCodes}>
-                <Button cssClass="btn-outline-warning">{$t('Show Recovery Codes')}</Button>
-            </ConfirmsPassword>
+            {#if $recoveryCodes.length === 0 && !$confirming}
+                <ConfirmsPassword on:confirmed={showRecoveryCodes}>
+                    <Button cssClass="btn-outline-warning">
+                        {$t('Show Recovery Codes')}
+                    </Button>
+                </ConfirmsPassword>
             {/if}
-            {#if !confirming}
-            <ConfirmsPassword on:confirmed={disableTwoFactorAuthentication}>
-                <Button cssClass="btn-outline-danger">{$t('Disable')}</Button>
-            </ConfirmsPassword>
+            {#if !$confirming}
+                <ConfirmsPassword on:confirmed={disableTwoFactorAuthentication}>
+                    <Button cssClass="btn-outline-danger" disabled={$disabling}>
+                        {$t('Disable')}
+                    </Button>
+                </ConfirmsPassword>
             {/if}
         {/if}
-
-        <!-- <ActionMessage on={$confirmationForm.recentlySuccessful}>
-            {$t('Saved')}
-        </ActionMessage>
-
-        <Button
-            cssClass="btn-outline-primary"
-            type="submit"
-            disabled={$confirmationForm.processing}
-            aria-label="Save Profile"
-        >
-            {$t('Save')}
-        </Button> -->
     </div>
 </ActionSection>

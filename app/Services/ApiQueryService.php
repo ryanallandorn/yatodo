@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Log;
 
 class ApiQueryService
 {
+
+
+    /**
+     * 
+     */
     public function applySearch(
         Builder $query,
         ?string $searchQuery,
@@ -19,7 +24,7 @@ class ApiQueryService
         if (is_string($searchFields)) {
             $searchFields = explode(',', $searchFields);
         }
-
+    
         if ($searchQuery && !empty($searchFields)) {
             $query->where(function ($queryBuilder) use (
                 $searchFields, $searchQuery, $searchOperator, $searchMatchCase, $searchRegex
@@ -27,22 +32,33 @@ class ApiQueryService
                 foreach ($searchFields as $index => $field) {
                     $operator = $searchRegex ? ($searchMatchCase ? '~' : '~*') : 'LIKE';
                     $queryCondition = $searchRegex ? $searchQuery : "%{$searchQuery}%";
-
-                    $field = $searchMatchCase ? $field : DB::raw("LOWER($field)");
-                    $searchQuery = $searchMatchCase ? $searchQuery : strtolower($searchQuery);
-
+    
+                    if (!$searchMatchCase && !$searchRegex) {
+                        // Case-insensitive non-regex search: Use LOWER function
+                        $rawField = "LOWER(\"$field\")";
+                        $queryCondition = strtolower($queryCondition);
+                    } else {
+                        // Case-sensitive or regex search: Use field as-is
+                        $rawField = "\"$field\"";
+                    }
+    
                     $queryMethod = $index === 0 || strtoupper($searchOperator) === 'AND'
                         ? 'whereRaw'
                         : 'orWhereRaw';
-
-                    $queryBuilder->{$queryMethod}("$field $operator ?", [$queryCondition]);
+    
+                    $queryBuilder->{$queryMethod}("$rawField $operator ?", [$queryCondition]);
                 }
             });
         }
-
+    
         return $query;
     }
+    
 
+
+    /**
+     * 
+     */
     public function applyFilters(Builder $query, array $filters = []): Builder
     {
         foreach ($filters as $field => $value) {
@@ -53,11 +69,29 @@ class ApiQueryService
         return $query;
     }
 
+
+    /**
+     * 
+     */
     public function applyOrder(Builder $query, string $orderBy = 'id', string $orderDirection = 'asc'): Builder
     {
         return $query->orderBy($orderBy, $orderDirection);
     }
 
+
+    /**
+     * 
+     */
+    public function applyPagination(Builder $query, int $limit = 10, int $page = 1): Builder
+    {
+        $offset = ($page - 1) * $limit;
+        return $query->limit($limit)->offset($offset);
+    }
+
+
+    /**
+     * 
+     */
     public function applyCursorPagination(Builder $query, ?int $lastId = null, int $limit = 10): Builder
     {
         if ($lastId) {
@@ -66,6 +100,10 @@ class ApiQueryService
         return $query->limit($limit);
     }
 
+
+    /**
+     * 
+     */
     public function extractParameters(array $params): array
     {
         return [
@@ -81,6 +119,10 @@ class ApiQueryService
         ];
     }
 
+
+    /**
+     * 
+     */
     public function getFilteredResults(Builder $query, array $params = []): array
     {
         $params = $this->extractParameters($params);

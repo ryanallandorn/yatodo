@@ -7,6 +7,7 @@
     import UpdateProfileInformationForm from '@pages/Profile/Partials/UpdateProfileInformationForm.svelte';
     import UpdatePasswordForm from '@pages/Profile/Partials/UpdatePasswordForm.svelte';
     import TwoFactorAuthenticationForm from '@pages/Profile/Partials/TwoFactorAuthenticationForm.svelte';
+    import LogoutOtherBrowserSessionsForm from '@pages/Profile/Partials/LogoutOtherBrowserSessionsForm.svelte';
     import SectionBorder from '@components/SectionBorder.svelte';
 
     // Reactive user property
@@ -50,6 +51,8 @@
             />
             <SectionBorder />
         {/if}
+
+        <LogoutOtherBrowserSessionsForm sessions="{sessions}" class="mt-10 sm:mt-0" />
         
         <!-- Optional deletion section -->
         {#if $page.props.jetstream.hasAccountDeletionFeatures}

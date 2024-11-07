@@ -30,9 +30,9 @@
             if (response.data.confirmed) {
                 //confirmed();
                 dispatch('confirmed'); 
-                alert(1);
+                //alert(1);
             } else {
-                alert(2);
+                //alert(2);
                 confirmingPassword = true;
                 showConfirmingPassword = true;
                 // await tick(); // Ensure DOM updates before focusing
@@ -51,9 +51,9 @@
             closeModal();
             //confirmed();
             dispatch('confirmed'); 
-            alert('confirmPassword: SUCCESS');
+            //alert('confirmPassword: SUCCESS');
         } catch (error) {
-            alert('confirmPassword: FAIL');
+            //alert('confirmPassword: FAIL');
             form.update(f => ({
                 ...f,
                 processing: false,

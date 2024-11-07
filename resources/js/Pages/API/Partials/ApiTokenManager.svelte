@@ -5,6 +5,8 @@
     import { t } from 'svelte-i18n';
     import { ray } from 'node-ray';
 
+    import { route } from 'ziggy-js';
+    import axios from 'axios';
 
     import { useForm, page, router } from "@inertiajs/svelte";
 
@@ -19,6 +21,7 @@
     import SectionBorder from '@components/SectionBorder.svelte'
     import ActionSection from '@components/Forms/ActionSection.svelte';
     import DialogModal from '@components/UI/Modal/Dialog.svelte';
+    import ConfirmsPassword from '@components/ConfirmsPassword.svelte';
 
     // Props
     export let tokens = [];
@@ -35,6 +38,7 @@
     let formErrors = {};
     let recentlySuccessful = false;
     let processing = false;
+    let selectedTokenValue = null;
 
     //const createApiTokenForm = useForm({
     $: createApiTokenForm = useForm({
@@ -84,6 +88,34 @@
         });
     };
 
+    async function showToken(token) {
+        try {
+            console.log('Token being passed:', token); // Debug log
+            
+            // Ensure we're passing the token ID as a string
+            const tokenId = token.id.toString();
+            
+            // Pass token ID as named parameter object
+            const response = await axios.get(route('api-tokens.show', { token: tokenId }), {
+                headers: {
+                    'Accept': 'application/json',
+                    // Ensure you have CSRF token and authentication headers if needed
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                }
+            });
+            
+            selectedTokenValue = response.data.token || 'No token found.';
+            displayingToken = true;
+        } catch (error) {
+            console.error('Failed to fetch token:', error);
+            // Log the actual error response if available
+            if (error.response) {
+                console.error('Error response:', error.response.data);
+            }
+            selectedTokenValue = 'Error fetching token.';
+            displayingToken = false;
+        }
+    }
 
 </script>
 
@@ -137,9 +169,13 @@
             {#each tokens as token (token.id)}
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="text-break text-light">
-                        {token.name}
+                        <ConfirmsPassword on:confirmed={() => showToken(token)}>
+                            <Button cssClass="btn">
+                                {token.name}
+                            </Button>
+                        </ConfirmsPassword>
+                        <!-- <pre>{JSON.stringify(token, null, 4)}</pre> -->
                     </div>
-        
                     <div class="d-flex align-items-center ms-2">
                         {#if token.last_used_ago}
                             <div class="small text-secondary">

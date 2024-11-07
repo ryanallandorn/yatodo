@@ -2,11 +2,15 @@
 
 // routes/web.php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-
+// Controllers
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DocumentationController;
+use Laravel\Jetstream\Http\Controllers\Inertia\UserProfileController;
 
 // Authenticated routes
 Route::middleware([
@@ -24,11 +28,41 @@ Route::middleware([
     })->name('dashboard');
 
 
+    // Projects
+    Route::resource('projects', ProjectController::class);
+    Route::post('projects/datatable', [ProjectController::class, 'getDatatableData'])->name('projects.datatable');
+    Route::get('projects/{project}/view', [ProjectController::class, 'show'])->name('projects.view');
+    Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
 
 
+    // Tasks
+    Route::resource('tasks', taskController::class);
+    Route::post('tasks/datatable', [taskController::class, 'getDatatableData'])->name('tasks.datatable');
+    Route::get('tasks/{task}/view', [taskController::class, 'show'])->name('tasks.view');
+    Route::get('tasks/{task}/edit', [taskController::class, 'edit'])->name('tasks.edit');
+
+    // Route::get('todos', Todos::class);
+
+    // Route::get('posts', ShowPosts::class);
+    // Route::get('notes', ShowNotes::class);
+    // Route::get('notes/create', CreateNote::class);
 
 
+    // // Define the profile route with session handling
+    // Route::get('/user/profile', function (Request $request) {
+    //     $controller = new UserProfileController();
 
+    //     // Fetch the sessions and add an ID if missing
+    //     $sessions = $controller->sessions($request)->map(function ($session, $index) {
+    //         $session->id = $session->id ?? $index; // Add ID if missing
+    //         return $session;
+    //     });
+
+    //     // Render the Inertia view with the sessions
+    //     return Inertia::render('Profile/Show', [
+    //         'sessions' => $sessions,
+    //     ]);
+    // })->name('profile.show');
 
 
     Route::prefix('documentation')->name('documentation.')->group(function () {

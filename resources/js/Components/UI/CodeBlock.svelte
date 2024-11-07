@@ -20,10 +20,10 @@
         try {
             await navigator.clipboard.writeText(codeContent.innerText);
             dispatch('copied', { success: true });
-            showToast('Code copied to clipboard!', 'success', 3000, 'bottom-end');
+            showToast('Code copied to clipboard!', 'success', 3000, 'bottom-middle');
         } catch {
             dispatch('copied', { success: false });
-            showToast('Failed to copy code.', 'danger', 3000, 'bottom-end');
+            showToast('Failed to copy code.', 'danger', 3000, 'bottom-middle');
         }
     }
 </script>

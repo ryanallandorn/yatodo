@@ -13,6 +13,12 @@
 <div class="menu-bar">
     <button on:click={toggleBold}>Bold</button>
     <button on:click={toggleItalic}>Italic</button>
+
+
+
+
+
+    
 </div>
 
 <style>
