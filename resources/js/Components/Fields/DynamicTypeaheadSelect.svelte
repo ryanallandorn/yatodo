@@ -27,11 +27,13 @@
             ...filters,
             searchQuery: inputValue,
             searchFields,        // Use the `searchFields` prop here
+            searchOperator: 'OR',
             limit: 10,
             page: 1
         });
-    
-        const response = await fetch(`${source}?${query}`);
+        const apiEndpoint = `${source}?${query}`;
+        console.log(apiEndpoint);
+        const response = await fetch(apiEndpoint);
         const data = await response.json();
         
         results = data.items || [];
@@ -66,8 +68,8 @@
     </script>
     
 
-<div class="position-relative dropdown">
-    <div class="form-floating form-group">
+<div class="field-wrapper field-dynamic-typeahead-select position-relative dropdown">
+    <div class="form-floating form-group ">
         <input
             type="text"
             class={`form-control ${inputClass} field-typeahead`}
@@ -85,6 +87,25 @@
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
+
+
+    <button
+        class="btn btn-sm position-absolute top-50 end-0 translate-middle-y z-1 opacity-50"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+        on:mouseover={() => event.currentTarget.classList.remove('opacity-50')}
+        on:mouseout={() => event.currentTarget.classList.add('opacity-50')}
+    >
+        <i class="bi bi-sliders2-vertical"></i>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <div class="dropdown-item">Action</div>
+        <div class="dropdown-item">Another action</div>
+        <div class="dropdown-item">Something else here</div>
+    </div>
+
 
     <!-- Dropdown with dynamic results -->
     {#if showDropdown}

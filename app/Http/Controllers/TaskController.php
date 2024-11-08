@@ -300,9 +300,10 @@ class TaskController extends Controller
     
         // Build the query using the service methods
         $tasksQuery = Task::query()
-            ->select('tasks.*', 'projects.id as project_id', 'projects.name as project_name')
-            ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id');
-    
+            ->select('tasks.*', 'projects.id as project_id', 'projects.name as project_name', 'parent_tasks.id as parent_task_id', 'parent_tasks.name as parent_task_name')
+            ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id')
+            ->leftJoin('tasks as parent_tasks', 'tasks.parent_task_id', '=', 'parent_tasks.id');
+
         // Log the SQL query
         $sqlQuery = $tasksQuery->toSql();
         $bindings = $tasksQuery->getBindings();

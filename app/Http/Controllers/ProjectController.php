@@ -246,25 +246,29 @@ class ProjectController extends Controller
      * =================================================================
      */ 
 
-    public function apiGet_V1(Request $request)
-    {
-        // For example, retrieve all projects
-        $projects = Project::all();
-        return response()->json($projects);
-    }
+    // public function apiGet_V1(Request $request)
+    // {
+    //     // For example, retrieve all projects
+    //     $projects = Project::all();
+    //     return response()->json($projects);
+    // }
     
-    public function apiGet(Request $request, ApiQueryService $apiQueryService)
+    public function apiGetMultiple(Request $request, ApiQueryService $apiQueryService)
     {
         // Get search parameters from request
         $searchQuery = $request->get('searchQuery');
         $searchFields = $request->get('searchFields', []);
         $searchOperator = $request->get('searchOperator', 'AND');
+        $primaryTable = 'projects';
     
         // Get filter parameters from request
         $filters = $request->get('filters', []);
     
+        // Get IDs to exclude, ensure it's an array
+        $filterExcludeIds = (array) $request->get('filterExcludeIds', []);
+    
         // Get order parameters from request
-        $orderBy = $request->get('orderBy', 'id');
+        $orderBy = $request->get('orderBy', "{$primaryTable}.id");
         $orderDirection = $request->get('orderDirection', 'asc');
     
         // Get pagination parameters from request
@@ -272,35 +276,73 @@ class ProjectController extends Controller
         $page = $request->get('page', 1);
     
         // Build the query using the service methods
-        $tasksQuery = Project::query();
-        $tasksQuery = $apiQueryService->applySearch($tasksQuery, $searchQuery, $searchFields, $searchOperator);
-        $tasksQuery = $apiQueryService->applyFilters($tasksQuery, $filters);
-        $tasksQuery = $apiQueryService->applyOrder($tasksQuery, $orderBy, $orderDirection);
+        $projectsQuery = Project::query()
+            ->select('projects.*'); // , 'projects.id as project_id', 'projects.name as project_name', 'parent_projects.id as parent_project_id', 'parent_projects.name as parent_project_name'
+            // ->leftJoin('projects', 'projects.project_id', '=', 'projects.id')
+            // ->leftJoin('projects as parent_projects', 'projects.parent_project_id', '=', 'parent_projects.id');
+
+        // Log the SQL query
+        $sqlQuery = $projectsQuery->toSql();
+        $bindings = $projectsQuery->getBindings();
+        Log::channel('debug')->info('SQL Query before pagination:', ['query' => $sqlQuery, 'bindings' => $bindings]);
+    
+        $projectsQuery = $apiQueryService->applySearch($projectsQuery, $searchQuery, $searchFields, $searchOperator); // , $primaryTable
+        $projectsQuery = $apiQueryService->applyFilters($projectsQuery, $filters, $primaryTable);
+    
+        // Exclude specific IDs
+        if (!empty($filterExcludeIds)) {
+            Log::channel('debug')->info('Excluding project IDs:', ['filterExcludeIds' => $filterExcludeIds]);
+            $projectsQuery->whereNotIn("{$primaryTable}.id", $filterExcludeIds); // Use "{$primaryTable}.id" for clarity
+        }
+    
+        $projectsQuery = $apiQueryService->applyOrder($projectsQuery, $orderBy, $orderDirection);
     
         // Calculate total number of records before applying pagination
-        $total = $tasksQuery->count();
+        $total = $projectsQuery->count();
     
         // Apply pagination
-        $tasksQuery = $apiQueryService->applyPagination($tasksQuery, $limit, $page);
+        $projectsQuery = $apiQueryService->applyPagination($projectsQuery, $limit, $page);
     
         // Log the SQL query
-        $sqlQuery = $tasksQuery->toSql();
-        $bindings = $tasksQuery->getBindings();
-        Log::channel('debug')->info('SQL Query:', ['query' => $sqlQuery, 'bindings' => $bindings]);
+        $sqlQuery = $projectsQuery->toSql();
+        $bindings = $projectsQuery->getBindings();
+        Log::channel('debug')->info('SQL Query after pagination:', ['query' => $sqlQuery, 'bindings' => $bindings]);
     
         // Execute the query and return results
-        $tasks = $tasksQuery->get();
+        $projects = $projectsQuery->get();
     
         // Return response with additional pagination information
         return response()->json([
-            'items' => $tasks,
+            'items' => $projects,
             'total' => $total,  // total number of records
             'limit' => $limit,
             'page' => $page,
         ]);
     }
+
+
+    // 
+    public function apiGetSingle($id)
+    {
+        // Validate that an ID is provided (although not strictly necessary since it's part of the route)
+        if (!$id) {
+            return response()->json(['message' => 'Project ID is required'], 400);
+        }
     
-
-
+        // Fetch the project by ID
+        $project = Project::query()
+            ->select('projects.*') // , 'projects.id as project_id', 'projects.name as project_name'
+            //->leftJoin('projects', 'projects.project_id', '=', 'projects.id')
+            // clients
+            ->where('projects.id', $id)
+            ->first();
+    
+        // Handle project not found
+        if (!$project) {
+            return response()->json(['message' => 'Project not found'], 404);
+        }
+    
+        return response()->json(['item' => $project]);
+    }
 
 }

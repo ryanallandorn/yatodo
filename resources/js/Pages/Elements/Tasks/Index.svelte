@@ -51,8 +51,16 @@
             }
         },
         { 
-            key: 'parent_task_id', 
-            label: 'Parent Task' 
+            key: 'name', 
+            label: 'Name', 
+            render: {
+                component: LinkViewModal,
+                props: {
+                    apiGetRoute: (item) => `/api/get/task/${item.parent_task_id}`,
+                    displaySlot: (item) => item.parent_task_name, 
+                    modalTitle: (item) => item.parent_task_name, 
+                }
+            }
         },
         { 
             key: 'actions', 

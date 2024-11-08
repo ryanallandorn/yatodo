@@ -26,7 +26,7 @@ class ApiQueryService
         if (is_string($searchFields)) {
             $searchFields = explode(',', $searchFields);
         }
-    
+
         if ($searchQuery && !empty($searchFields)) {
             $query->where(function ($queryBuilder) use (
                 $searchFields, $searchQuery, $searchOperator, $searchMatchCase, $searchRegex
@@ -34,28 +34,37 @@ class ApiQueryService
                 foreach ($searchFields as $index => $field) {
                     $operator = $searchRegex ? ($searchMatchCase ? '~' : '~*') : 'LIKE';
                     $queryCondition = $searchRegex ? $searchQuery : "%{$searchQuery}%";
-    
+
                     if (!$searchMatchCase && !$searchRegex) {
                         // Case-insensitive non-regex search: Use LOWER function
-                        $rawField = "LOWER(\"$field\")";
+                        // Check if the field is fully qualified (e.g., "table.field")
+                        if (strpos($field, '.') !== false) {
+                            $rawField = "LOWER($field)";
+                        } else {
+                            $rawField = "LOWER(\"$field\")";
+                        }
                         $queryCondition = strtolower($queryCondition);
                     } else {
                         // Case-sensitive or regex search: Use field as-is
-                        $rawField = "\"$field\"";
+                        if (strpos($field, '.') !== false) {
+                            $rawField = $field;
+                        } else {
+                            $rawField = "\"$field\"";
+                        }
                     }
-    
+
                     $queryMethod = $index === 0 || strtoupper($searchOperator) === 'AND'
                         ? 'whereRaw'
                         : 'orWhereRaw';
-    
+
                     $queryBuilder->{$queryMethod}("$rawField $operator ?", [$queryCondition]);
                 }
             });
         }
-    
+
         return $query;
     }
-    
+
 
 
     /**
@@ -77,10 +86,8 @@ class ApiQueryService
             // Ensure the field is prefixed with the target table to avoid ambiguity
             $prefixedField = "{$targetTable}.{$field}";
 
-
-
             //Log::channel('debug')->info('Prefixed Field:', $prefixedField);
-            ray($prefixedField);
+            // ray($prefixedField);
     
             // Handle range filters if the value is an array with exactly two numeric values
             if (is_array($value) && count($value) === 2 && is_numeric($value[0]) && is_numeric($value[1])) {
@@ -179,4 +186,18 @@ class ApiQueryService
             'limit' => $params['limit'],
         ];
     }
+
+
+    /**
+     * 
+     */
+    public function applyExcludeIds(Builder $query, array $excludeIds, string $primaryKey): Builder
+    {
+        if (!empty($excludeIds)) {
+            $query->whereNotIn($primaryKey, $excludeIds);
+        }
+        return $query;
+    }
+
+
 }
