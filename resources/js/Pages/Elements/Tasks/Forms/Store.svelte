@@ -29,6 +29,7 @@
     export let task = null; 
     export let tasks = [];
     export let filtersFieldTask = {};
+    export let showSubmitButton = true; 
 
     //const currentRoute = $page.url; // Full URL of the current page
     const currentRoute = route().current();
@@ -47,12 +48,19 @@
         //ray($form).label('Form Data'); 
 
         $form.post(route('tasks.store'), {
-    onFinish: () => {
-        $form.reset('name'); // Reset the form field after submission if needed
-        // Optionally, you could handle more actions here, like closing a modal
-    }
-});
+            onFinish: () => {
+                $form.reset('name'); // Reset the form field after submission if needed
+                // Optionally, you could handle more actions here, like closing a modal
+            }
+        });
     };
+
+    // Expose the submit function to the parent
+    export function externalSubmit() {
+        submit();
+    }
+
+
 </script>
     
 
@@ -85,11 +93,13 @@
 
 
     <FieldText form={$form} name="name" id="name" label="{$t('Name')}" />
+    {#if showSubmitButton}
     <div class="flex items-center justify-end mt-4">
         <Button type="submit" disabled={$form.processing} cssClass="btn-lg btn-primary w-100 py-2 mb-2">
             {#if task } {$t('Update')} {:else} {$t('Create')} {/if}  {$t('Task')}
         </Button>
     </div>
+    {/if}
     <div class="form-polling"></div>
     <div class="form-result"></div>
 </form>

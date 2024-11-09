@@ -9,10 +9,27 @@
 
     import App from "@layouts/App.svelte";
 
+    import ModalBox from '@components/UI/Modal/Box.svelte';
+    import CreateProjectForm from '@pages/Elements/Projects/Forms/Store.svelte';
+
     import ContextNav from '@components/Structure/Nav/Context.svelte';
     import Datatable from '@components/UI/Datatable/Datatable.svelte';
     import ActionsDropdown from '@components/Actions/Dropdown.svelte';
     import LinkViewPage from '@components/UI/Datatable/Slots/LinkViewPage.svelte';
+
+
+    let modal; // Store the modal instance reference
+    let formInstance;
+
+    function openUserModal() {
+        modal.open(); // Access the modal's `open` method through the bound instance
+    }
+
+    function handleFormSubmit() {
+        if (formInstance && formInstance.externalSubmit) {
+            formInstance.externalSubmit(); // Call the exposed method
+        }
+    }
 
     // Define nav items and actions
     let navItems = [
@@ -70,10 +87,39 @@
     <!-- Pass `navItems` to `ContextNav` and use the `actions` slot -->
     <ContextNav {navItems}>
         <div class="context-actions" slot="actions">
-            <a class="btn btn-primary" href="{route('projects.create')}">
+
+
+            <button 
+                class="btn btn-primary" 
+                on:click={openUserModal}
+            >
                 {$t('Add Project')}
                 <i class="bi bi-plus-lg"></i>
-            </a>
+            </button>
+        
+            <ModalBox
+                bind:this={modal}
+            >
+                <span slot="title">{$t('Add A Project')}</span>
+        
+                <div slot="staticContent">
+                    <CreateProjectForm bind:this={formInstance} showSubmitButton={false} />
+                </div>
+        
+                <div slot="footer">
+                    <!-- <button type="button" class="btn btn-secondary" on:click={() => console.log('Custom Close')}>
+                        Custom Close
+                    </button> -->
+                    <button type="button" class="btn btn-primary" on:click={handleFormSubmit}>
+                        {$t('Add Project')}
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+            </ModalBox>
+            <!-- <a class="btn btn-primary" href="{route('projects.create')}">
+                {$t('Add Project')}
+                <i class="bi bi-plus-lg"></i>
+            </a> -->
         </div>
     </ContextNav>
 
