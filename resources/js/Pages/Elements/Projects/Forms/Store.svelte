@@ -62,7 +62,7 @@
 <p>Current Component: {currentComponent}</p>
 
 
-<form on:submit|preventDefault={submit} class="form-auth text-center">
+<form on:submit|preventDefault={submit} class="text-center">
 
     <FieldText form={$form} name="name" id="name" label="{$t('Name')}" />
     {#if showSubmitButton}

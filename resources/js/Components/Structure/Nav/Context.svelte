@@ -7,7 +7,7 @@
     export let navItems = [];
 </script>
 
-<nav class="navbar bg-body-tertiary justify-content-between p-2 mb-4">
+<nav class="navbar navbar-context bg-body-tertiary justify-content-between p-0 mb-4">
     <!-- Pass `navItems` prop to `InnerMainNav` component -->
     <InnerMainNav {navItems} />
     

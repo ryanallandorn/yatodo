@@ -3,6 +3,8 @@ import laravel from 'laravel-vite-plugin';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import path from 'path';
 import viteCompression from 'vite-plugin-compression';
+import sveltePreprocess from 'svelte-preprocess';
+
 
 const ASSET_URL = process.env.ASSET_URL || '';
 
@@ -17,6 +19,11 @@ export default defineConfig({
             experimental: {
                 prebundleSvelteLibraries: true,
             },
+            preprocess: sveltePreprocess({
+                scss: {
+                    // Any SCSS-specific options you want to add
+                },
+            }),
         }),
         // viteCompression({ algorithm: 'brotliCompress', ext: '.br' }), // PROD
         

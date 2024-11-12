@@ -10,7 +10,7 @@
     import App from "@layouts/App.svelte";
 
     // import TiptapEditor  from '@components/Fields/Tiptap/Editor.svelte';
-    import CreateTaskForm from '@pages/Elements/Tasks/Forms/Store.svelte';
+    import CreateTaskForm from '@pages/Elements/Tasks/Forms/StoreSingle.svelte';
 
 </script>
 

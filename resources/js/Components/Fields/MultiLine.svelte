@@ -1,6 +1,5 @@
 <script>
-
-// resources/js/Components/Fields/Switch.svelte
+// resources/js/Components/Fields/MultiLine.svelte
 
     import { t } from 'svelte-i18n';
     export let form; // Accept the form object as a prop
@@ -12,19 +11,18 @@
     export let label = ''; // Default label for the input field
 </script>
 
-<div class="{`form-check form-switch ${fieldWrapperCss}`}">
-    <input 
-        type="checkbox" 
+<div class="{`form-floating ${fieldWrapperCss}`}">
+    <textarea
         {...(id ? { id } : {})} 
         {...(name ? { name } : {})} 
         {...(Object.keys(attributes).length ? attributes : {})} 
-        bind:checked={form[name]}
-        class={`form-check-input ${fieldInputCss}`}
-    >
-    <label class="form-label" for={id}>
-        <slot></slot>
-    </label>
-    {#if form.errors && form.errors[name]}  <!-- Dynamically check for errors on the field -->
+        bind:value={form[name]} 
+        placeholder={label} 
+        class={`form-control ${fieldInputCss}`}
+    ></textarea> <!-- Keep this empty -->
+    <label class="form-label" for={id}>{label}</label>
+    
+    {#if form.errors && form.errors[name]}  <!-- Check for errors and display -->
         <div class="alert alert-danger field-error">{form.errors[name]}</div>
     {/if}
 </div>

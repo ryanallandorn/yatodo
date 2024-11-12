@@ -16,6 +16,7 @@
 
     // Components >Fields
     import Button from '@components/UI/Buttons/Button.svelte';
+
     import FieldCheckbox from '@components/Fields/Checkbox.svelte';
     import FieldSwitch from '@components/Fields/Switch.svelte';
     import FieldText from '@components/Fields/Text.svelte';
@@ -24,6 +25,7 @@
 
     // Components > Forms
     import ValidationErrors from '@components/Forms/ValidationErrors.svelte';
+    
 
 
     export let task = null; 
@@ -62,10 +64,12 @@
 
 
 </script>
-    
 
 
-<form on:submit|preventDefault={submit} class="form-auth text-center">
+
+
+<form on:submit|preventDefault={submit} class="text-center">
+
 
     <DynamicTypeaheadSelect
         source="/api/get/projects"

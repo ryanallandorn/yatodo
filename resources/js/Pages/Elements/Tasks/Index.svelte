@@ -6,7 +6,8 @@
     import App from "@layouts/App.svelte";
 
     import ModalBox from '@components/UI/Modal/Box.svelte';
-    import CreateTaskForm from '@pages/Elements/Tasks/Forms/Store.svelte';
+    import CreateTaskForm from '@pages/Elements/Tasks/Forms/StoreSingle.svelte';
+    import ModalAddBody from '@pages/Elements/Tasks/Modal/Add/Body.svelte';
 
     import ContextNav from '@components/Structure/Nav/Context.svelte';
     import Datatable from '@components/UI/Datatable/Datatable.svelte';
@@ -121,7 +122,7 @@
                 <span slot="title">{$t('Add A Task')}</span>
         
                 <div slot="staticContent">
-                    <CreateTaskForm bind:this={formInstance} showSubmitButton={false} />
+                    <ModalAddBody />
                 </div>
         
                 <div slot="footer">
@@ -146,6 +147,20 @@
     <Datatable 
         apiUrl="{route('api.get.tasks')}"
         {columns}
-    />
+        datatableControls={{
+            search: {
+                enabled: true,
+                debounce: 300,
+                //trigger: 'onKeystroke' 
+                //fields:[],
+            },
+            pageLength: {
+                enabled:true,
+            }
+        }}
+    >
+        <div slot="datatable-controls"></div> <!-- bIND SLOT ITEMS TO DATATABLE-->
+        <div slot="datatable-filters"></div>
+    </Datatable>
 
 </App>

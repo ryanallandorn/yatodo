@@ -1,30 +1,36 @@
 <script>
 
-// resources/js/Components/Fields/Switch.svelte
+// resources/js/Components/UI/Buttons/Switch.svelte
 
     import { t } from 'svelte-i18n';
-    export let form; // Accept the form object as a prop
     export let id = null;
-    export let name = null;
     export let attributes = {};
     export let fieldInputCss = '';
     export let fieldWrapperCss = '';
     export let label = ''; // Default label for the input field
+
+    // New prop: a function that will be called when the switch is toggled
+    export let onToggle = null;
+
+    // Function to handle the toggle action
+    function handleToggle(event) {
+        if (onToggle && typeof onToggle === 'function') {
+            onToggle(event);
+        }
+    }
+
 </script>
 
-<div class="{`form-check form-switch ${fieldWrapperCss}`}">
+<div class="form-check form-switch btn-switch">
     <input 
         type="checkbox" 
         {...(id ? { id } : {})} 
         {...(name ? { name } : {})} 
         {...(Object.keys(attributes).length ? attributes : {})} 
-        bind:checked={form[name]}
         class={`form-check-input ${fieldInputCss}`}
+        on:change={handleToggle}
     >
-    <label class="form-label" for={id}>
+    <label class="form-check-label" for="flexSwitchCheckDefault">
         <slot></slot>
     </label>
-    {#if form.errors && form.errors[name]}  <!-- Dynamically check for errors on the field -->
-        <div class="alert alert-danger field-error">{form.errors[name]}</div>
-    {/if}
 </div>

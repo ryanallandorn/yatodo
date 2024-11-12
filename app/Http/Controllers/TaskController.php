@@ -284,8 +284,11 @@ class TaskController extends Controller
         $searchOperator = $request->get('searchOperator', 'AND');
         $primaryTable = 'tasks';
     
-        // Get filter parameters from request
+        // Get filter parameters from request, excluding `includeSubtasks`
         $filters = $request->get('filters', []);
+        unset($filters['includeSubtasks']); // Remove `includeSubtasks` from filters
+    
+        $includeSubtasks = $request->input('filters.includeSubtasks', false);
     
         // Get IDs to exclude, ensure it's an array
         $filterExcludeIds = (array) $request->get('filterExcludeIds', []);
@@ -303,19 +306,26 @@ class TaskController extends Controller
             ->select('tasks.*', 'projects.id as project_id', 'projects.name as project_name', 'parent_tasks.id as parent_task_id', 'parent_tasks.name as parent_task_name')
             ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id')
             ->leftJoin('tasks as parent_tasks', 'tasks.parent_task_id', '=', 'parent_tasks.id');
-
+    
+        // Apply the `includeSubtasks` filter separately
+        if (!$includeSubtasks || $includeSubtasks === 'false') {
+            // Exclude child tasks by default if `includeSubtasks` is false
+            $tasksQuery->whereNull('tasks.parent_task_id');
+        }
+    
         // Log the SQL query
         $sqlQuery = $tasksQuery->toSql();
         $bindings = $tasksQuery->getBindings();
         Log::channel('debug')->info('SQL Query before pagination:', ['query' => $sqlQuery, 'bindings' => $bindings]);
     
+        // Apply search and filters using the service
         $tasksQuery = $apiQueryService->applySearch($tasksQuery, $searchQuery, $searchFields, $searchOperator);
         $tasksQuery = $apiQueryService->applyFilters($tasksQuery, $filters, $primaryTable);
     
         // Exclude specific IDs
         if (!empty($filterExcludeIds)) {
             Log::channel('debug')->info('Excluding task IDs:', ['filterExcludeIds' => $filterExcludeIds]);
-            $tasksQuery->whereNotIn("{$primaryTable}.id", $filterExcludeIds); // Use "{$primaryTable}.id" for clarity
+            $tasksQuery->whereNotIn("{$primaryTable}.id", $filterExcludeIds);
         }
     
         $tasksQuery = $apiQueryService->applyOrder($tasksQuery, $orderBy, $orderDirection);
@@ -337,11 +347,13 @@ class TaskController extends Controller
         // Return response with additional pagination information
         return response()->json([
             'items' => $tasks,
-            'total' => $total,  // total number of records
+            'total' => $total,
             'limit' => $limit,
             'page' => $page,
         ]);
     }
+    
+    
     
 
     // Method for fetching a single task

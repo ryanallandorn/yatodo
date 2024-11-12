@@ -1,0 +1,37 @@
+.textarea-notepad {
+    --line-height: 1.5; /* Line height for spacing between separators */
+    --line-color: rgba(0, 0, 0, 0.2); /* Default color for separator lines */
+    --first-separator-color: var(--line-color); /* Default color of the first separator line */
+
+    /* Background with the first separator line and repeating separators */
+    background: 
+        /* First separator line */
+        linear-gradient(
+            to bottom,
+            var(--first-separator-color) 0, 
+            var(--first-separator-color) 1px, 
+            transparent 1px, 
+            transparent calc(var(--line-height) * 1rem)
+        ),
+        /* Repeating separator lines */
+        repeating-linear-gradient(
+            to bottom,
+            transparent,
+            transparent calc(var(--line-height) * 1rem - 1px),
+            var(--line-color) calc(var(--line-height) * 1rem - 1px),
+            var(--line-color) calc(var(--line-height) * 1rem)
+        );
+    line-height: var(--line-height); /* Apply line height for text */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font for a notepad effect */
+    transition: background-color 0.3s; /* Smooth transition for color change */
+}
+
+/* When the textarea is unfocused and empty, make the first separator line transparent */
+.textarea-notepad:placeholder-shown:not(:focus) {
+    --first-separator-color: transparent; /* Make the first separator line transparent */
+}
+
+/* Dark mode styles using data-bs-theme */
+[data-bs-theme="dark"] .textarea-notepad {
+    --line-color: rgba(255, 255, 255, 0.5); /* White for separator lines in dark mode */
+}
