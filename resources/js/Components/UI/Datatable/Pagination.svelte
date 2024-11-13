@@ -1,22 +1,27 @@
 <script>
+
+  
+import { t } from 'svelte-i18n';
+
     export let currentPage;
     export let total;
     export let limit;
     export let onPageChange;
+    export let showTotal;
 
-    // Calculate total pages
-    const totalPages = () => Math.ceil(total / limit);
+    // Reactive calculation of total pages
+    $: totalPages = Math.max(Math.ceil(total / limit), 1);
 
     // Navigate to a specific page
     const goToPage = (page) => {
-        if (page > 0 && page <= totalPages()) {
+        if (page > 0 && page <= totalPages) {
             onPageChange(page);
         }
     };
 
     // Navigate to the next page
     const goToNextPage = () => {
-        if (currentPage < totalPages()) {
+        if (currentPage < totalPages) {
             goToPage(currentPage + 1);
         }
     };
@@ -37,7 +42,7 @@
             </button>
         </li>
 
-        {#each Array(totalPages()).fill(0).map((_, i) => i + 1) as page}
+        {#each Array.from({ length: totalPages }, (_, i) => i + 1) as page}
             <li class="page-item {page === currentPage ? 'active' : ''}">
                 <button class="page-link" on:click={() => goToPage(page)}>
                     {page}
@@ -46,9 +51,12 @@
         {/each}
 
         <li class="page-item">
-            <button class="page-link" on:click={goToNextPage} disabled={currentPage >= totalPages()}>
+            <button class="page-link" on:click={goToNextPage} disabled={currentPage >= totalPages}>
                 Next
             </button>
         </li>
     </ul>
+    {#if showTotal}
+    {total} {$t('item(s)')}
+    {/if}
 </nav>

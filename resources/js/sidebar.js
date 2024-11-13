@@ -69,9 +69,7 @@
      * 
      */
     window.addEventListener('DOMContentLoaded', () => {
-        alert('hi');
         if (btnSidebarToggle) {
-
             btnSidebarToggle.addEventListener('click', switchSidebarState);
         }
     })

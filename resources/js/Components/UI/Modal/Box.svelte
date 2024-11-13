@@ -1,5 +1,8 @@
-<!-- resources/js/Components/Modal.svelte -->
+
 <script>
+
+// esources/js/Components/Modal.svelte 
+
     import { createEventDispatcher, onMount } from 'svelte';
     import 'bootstrap/js/dist/modal'; // Import Bootstrap's modal JS
 

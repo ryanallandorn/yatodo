@@ -1,6 +1,6 @@
 <script>
 
-// resources/js/Pages/Auth/Login.svelte
+// resources/js/Pages/Elements/Tasks/Forms/StoreSingle.svelte
 
     import { ray } from 'node-ray';
     import { t } from 'svelte-i18n';
@@ -59,6 +59,7 @@
 
     // Expose the submit function to the parent
     export function externalSubmit() {
+        alert('called externalSubmit');
         submit();
     }
 

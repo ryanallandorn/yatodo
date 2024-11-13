@@ -3,10 +3,11 @@
 
     import { t } from 'svelte-i18n';
     import { useForm } from "@inertiajs/svelte";
+    import { tick } from 'svelte';
     import App from "@layouts/App.svelte";
 
     import ModalBox from '@components/UI/Modal/Box.svelte';
-    import CreateTaskForm from '@pages/Elements/Tasks/Forms/StoreSingle.svelte';
+    //import CreateTaskForm from '@pages/Elements/Tasks/Forms/StoreSingle.svelte';
     import ModalAddBody from '@pages/Elements/Tasks/Modal/Add/Body.svelte';
 
     import ContextNav from '@components/Structure/Nav/Context.svelte';
@@ -24,8 +25,12 @@
         modal.open(); // Access the modal's `open` method through the bound instance
     }
 
-    function handleFormSubmit() {
+    async function handleFormSubmit() {
+        alert('hi');
+        console.log(formInstance);
+        await tick(); // Wait for the DOM to update
         if (formInstance && formInstance.externalSubmit) {
+            alert('wee');
             formInstance.externalSubmit(); // Call the exposed method
         }
     }
@@ -69,6 +74,7 @@
                 }
             }
         },
+        // reactive if filter parent
         { 
             key: 'name', 
             label: 'Name', 
@@ -92,6 +98,18 @@
             }
         }
     ];
+
+    let filters = [
+        {
+            key: 'includeSubtasks',
+            value: false, 
+            reloadOnChange: true,
+            type: 'FilterSwitch',
+            label: $t('Include Subtasks'),
+            callbacks:[],
+        }
+        // Add more filters as needed
+    ];
 </script>
 
 <App>
@@ -107,13 +125,12 @@
     <ContextNav {navItems}>
         <div class="context-actions" slot="actions">
 
-
             <button 
                 class="btn btn-primary" 
                 on:click={openUserModal}
             >
-            {$t('Add Task')}
-            <i class="bi bi-plus-lg"></i>
+                {$t('Add Task')}
+                <i class="bi bi-plus-lg"></i>
             </button>
         
             <ModalBox
@@ -122,7 +139,7 @@
                 <span slot="title">{$t('Add A Task')}</span>
         
                 <div slot="staticContent">
-                    <ModalAddBody />
+                    <ModalAddBody bind:formInstance />
                 </div>
         
                 <div slot="footer">
@@ -158,9 +175,16 @@
                 enabled:true,
             }
         }}
+        {filters}
     >
         <div slot="datatable-controls"></div> <!-- bIND SLOT ITEMS TO DATATABLE-->
-        <div slot="datatable-filters"></div>
+        <div slot="datatable-filters">
+            <!-- <FilterSwitch
+                label="Include Subtasks"
+                bind:value={filters.includeSubtasks}
+                on:change={(e) => applyFilter('includeSubtasks', e.detail.value)}
+            /> -->
+        </div>
     </Datatable>
 
 </App>

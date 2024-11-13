@@ -10,8 +10,8 @@
     <tr>
         {#each columns as column}
             <td>
-                <span class="placeholder-glow">
-                    <span class="placeholder col-12"></span>
+                <span class="placeholder-glow opacity-50">
+                    <span class="placeholder col-12 placeholder-lg"></span>
                 </span>
             </td>
         {/each}

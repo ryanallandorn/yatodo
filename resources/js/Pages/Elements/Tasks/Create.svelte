@@ -1,6 +1,6 @@
 <script>
 
-// resources/js/Pages/Dashboard.svelte
+// resources/js/Pages/Elements/Tasks/Create.svelte
 
 
     import { t } from 'svelte-i18n';
@@ -11,6 +11,8 @@
 
     // import TiptapEditor  from '@components/Fields/Tiptap/Editor.svelte';
     import CreateTaskForm from '@pages/Elements/Tasks/Forms/StoreSingle.svelte';
+
+    let formInstance; // Define formInstance to bind with CreateTaskForm
 
 </script>
 
@@ -26,6 +28,6 @@
         </h2>
     </div>
 
-    <CreateTaskForm />
+    <CreateTaskForm bind:this={formInstance} />
 
 </App>

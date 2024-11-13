@@ -1,4 +1,7 @@
 <script>
+
+// resources/js/Components/UI/Datatable/Datatable.svelte
+
     import { onMount } from 'svelte';
     import axios from 'axios';
     import Pagination from './Pagination.svelte';
@@ -21,6 +24,7 @@
             enabled: false,
         }
     };
+    export let filters = [];
 
     let items = [];
     let loading = true;
@@ -28,8 +32,16 @@
     let limit = 10;
     let currentPage = 1;
     let searchQuery = '';
-    let filters = { includeSubtasks: false };
+    //let filters = { includeSubtasks: false };
     let collapseElement;
+
+    // FUNCTION TO PROCESS OUT 'valuefilters from' filters
+    // Map filter types to components
+    const filterComponents = {
+        FilterSwitch
+        // Add more mappings here if needed
+    };
+
 
     const debounceDuration = datatableControls.search.debounce || 300;
 
@@ -37,19 +49,31 @@
         fetchData(currentPage);
     }, debounceDuration);
 
-    const buildQueryParams = () => ({
-        searchQuery,
-        searchFields: 'tasks.name,tasks.description',
-        limit,
-        page: currentPage,
-        searchOperator: 'OR',
-        filters: { ...filters }
-    });
+    const buildQueryParams = () => {
+        // Create a base params object
+        const params = {
+            searchQuery,
+            searchFields: 'tasks.name,tasks.description',
+            limit,
+            page: currentPage,
+            searchOperator: 'OR'
+        };
 
-    const applyFilter = (filterName, value) => {
-        filters[filterName] = value;
-        currentPage = 1; // Reset to the first page when filters change
-        fetchData(currentPage); // Refetch the data
+        // Add filters to params
+        filters.forEach((filter) => {
+            params[`filters[${filter.key}]`] = filter.value;
+        });
+
+        return params;
+    };
+
+    const applyFilter = (filter, value) => {
+        // Update the value based on the filter's key
+        filter.value = value;
+        if (filter.reloadOnChange) {
+            currentPage = 1;
+            fetchData(currentPage);
+        }
     };
 
     const fetchData = async (page) => {
@@ -68,7 +92,7 @@
             console.error("Error fetching data:", error);
             showErrorNotification("Failed to load data. Please try again.");
         } finally {
-            setTimeout(() => { loading = false; }, 500);
+            setTimeout(() => { loading = false; }, 300);
         }
     };
 
@@ -127,12 +151,18 @@
     </div>    
     <div class="datatable-filters collapse" bind:this={collapseElement}>
         <div class="card card-body d-flex justify-content-between mb-4">
-            <FilterSwitch
-                label="Include Subtasks"
-                bind:value={filters.includeSubtasks}
-                on:change={(e) => applyFilter('includeSubtasks', e.detail.value)}
-            />
             <slot name="datatable-filters"></slot>
+            {#if filters && Array.isArray(filters)}
+                {#each filters as filter, index}
+                    <svelte:component
+                        this={filterComponents[filter.type]}
+                        label={filter.label}
+                        bind:value={filter.value}
+                        on:change={(e) => applyFilter(filter, e.detail.value)}
+                        {...filter.props} 
+                    />
+                {/each}
+            {/if}
         </div>
     </div>
 
@@ -178,4 +208,5 @@
     {total} 
     {limit} 
     onPageChange={fetchData} 
+    showTotal={true}
 />
