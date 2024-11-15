@@ -13,7 +13,7 @@
     import ContextNav from '@components/Structure/Nav/Context.svelte';
     import Datatable from '@components/UI/Datatable/Datatable.svelte';
     import ActionsDropdown from '@components/Actions/Dropdown.svelte';
-    import LinkViewPage from '@components/UI/Datatable/Slots/LinkViewPage.svelte';
+    import LinkViewPage from '@components/UI/Datatable/Cells/LinkViewPage.svelte';
 
     let modal; // Store the modal instance reference
     let formInstance;

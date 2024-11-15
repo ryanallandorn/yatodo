@@ -274,6 +274,7 @@ class TaskController extends Controller
     /**
      * Main Method to Apply All Filters
      */
+
     private function applyFilters(Request $request, $tasksQuery)
     {
         $filters = $request->get('filters', []);
@@ -282,6 +283,7 @@ class TaskController extends Controller
         $this->applyIncludeSubtasksFilter($filters, $tasksQuery);
         $this->applyFilterExcludeIds($filters, $tasksQuery);
         $this->applyFilterByProjectId($filters, $tasksQuery);
+        $this->applyParentTaskIdFilter($filters, $tasksQuery); // Add this line
     }
 
 
@@ -291,9 +293,17 @@ class TaskController extends Controller
     private function applyIncludeSubtasksFilter(array $filters, $tasksQuery)
     {
         $includeSubtasks = $filters['includeSubtasks'] ?? false;
-        if (!$includeSubtasks || $includeSubtasks === 'false') {
-            // Exclude child tasks if `includeSubtasks` is false
-            $tasksQuery->whereNull('tasks.parent_task_id');
+        $parentTaskId = $filters['parent_task_id'] ?? null;
+    
+        // If we're filtering by a specific parent_task_id, we want to show those children
+        // regardless of the includeSubtasks setting
+        if ($parentTaskId) {
+            $tasksQuery->where('tasks.parent_task_id', $parentTaskId);
+        } else {
+            // Only apply the includeSubtasks filter when we're not filtering by parent_task_id
+            if (!$includeSubtasks || $includeSubtasks === 'false') {
+                $tasksQuery->whereNull('tasks.parent_task_id');
+            }
         }
     }
 
@@ -320,6 +330,20 @@ class TaskController extends Controller
             $tasksQuery->where('tasks.project_id', $projectId);
         }
     }
+
+    /**
+     * Method to Handle `parent_task_id` Filter
+     */
+    private function applyParentTaskIdFilter(array $filters, $tasksQuery)
+    {
+        if (isset($filters['parent_task_id'])) {
+            $parentTaskId = $filters['parent_task_id'];
+
+            // Apply the filter to get tasks with the specified `parent_task_id`
+            $tasksQuery->where('tasks.parent_task_id', '=', $parentTaskId);
+        }
+    }
+
 
 
     /*

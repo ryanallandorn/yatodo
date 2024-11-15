@@ -1,7 +1,7 @@
 
 <script>
 
-// resources/js/Components/UI/Datatable/Slots/LinkViewPage.svelte
+// resources/js/Components/UI/Datatable/Cells/LinkViewPage.svelte
 
 import { Link } from "@inertiajs/svelte";
 import { t } from 'svelte-i18n';

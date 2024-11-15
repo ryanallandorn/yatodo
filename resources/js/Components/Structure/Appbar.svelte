@@ -9,6 +9,8 @@
     import LogoIcon from '@components/Branding/LogoIcon.svelte';
     import ColorSwitcherAppbarNav from '@components/UI/States/ColorSwitcher/AppbarNav.svelte';
     import AppbarUserNav from '@components/Structure/Appbar/UserNav.svelte';
+    import AppbarCommentNav from '@components/Structure/Appbar/CommentNav.svelte';
+
     // import Timer from '$lib/components/Timer.svelte'; // Your timer component
     // import DropdownMega from '$components/DropdownMega.svelte'; // Dropdown Mega component
     // import DropdownLink from '$components/DropdownLink.svelte'; // Link component for dropdown
@@ -47,6 +49,7 @@
                 Component loaded at: {loadTime}
             </span>
             <ColorSwitcherAppbarNav />
+            <AppbarCommentNav />
             <AppbarUserNav />
         </div>
     </div>

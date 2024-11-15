@@ -42,6 +42,24 @@
         // Add more mappings here if needed
     };
 
+    let expandedRowIdentifier = null; // Track the expanded row using a unique identifier
+
+    function handleCollapseToggle(event) {
+        const { rowIdentifier, isCollapsed } = event.detail;
+        expandedRowIdentifier = isCollapsed ? null : rowIdentifier; // Set the expanded row or collapse it
+    }
+
+    // Function to fetch child data
+    async function fetchChildData(itemId) {
+        // Simulate fetching data from an API
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(`Data for item ${itemId}`);
+            }, 1000);
+        });
+    }
+
+
 
     const debounceDuration = datatableControls.search.debounce || 300;
 

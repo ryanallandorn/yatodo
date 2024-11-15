@@ -1,7 +1,10 @@
-<script>
-// resources/js/Pages/Elements/Tasks/Index.svelte
 
-    import { t } from 'svelte-i18n';
+
+<script>
+
+// resources/js/Pages/Elements/Tasks/SubtasksDatatable.svelte
+
+import { t } from 'svelte-i18n';
     import { useForm } from "@inertiajs/svelte";
     import { tick } from 'svelte';
     import App from "@layouts/App.svelte";
@@ -18,32 +21,9 @@
     import SubtasksDatatable from '@pages/Elements/Tasks/SubtasksDatatable.svelte';
     import LinkViewModal from '@pages/Elements/Tasks/Show/Modal.svelte';
 
+export let data;
+export let parentItem;
 
-
-    let modal; // Store the modal instance reference
-    let formInstance;
-
-    function openUserModal() {
-        modal.open(); // Access the modal's `open` method through the bound instance
-    }
-
-    async function handleFormSubmit() {
-        console.log(formInstance);
-        await tick(); // Wait for the DOM to update
-        if (formInstance && formInstance.externalSubmit) {
-            formInstance.externalSubmit(); // Call the exposed method
-        }
-    }
-
-    // Define nav items and actions
-    let navItems = [
-        {
-            name: 'All Tasks',
-            icon: 'bi bi-globe',
-            link: route('tasks.index'),
-            children: []
-        },
-    ];
 
     // Define columns with labels
     const columns = [
@@ -88,19 +68,6 @@
             }
         },
         { 
-            key: 'subtasks', 
-            label: $t('Subtasks'), 
-            render: {
-                component: CollapseRow,
-                props: {
-                    buttonDisplaySlot: (item) => `${item.subtasks_count || 0}`, // PROGRESS subtasks
-                    contentSlot: () => SubtasksDatatable,
-                    item: (item) => item,
-                    parentRowId: (item) => item.id  // Add this line
-                }
-            }
-        },
-        { 
             key: 'actions', 
             label: 'Actions', 
             hideLabel: true, 
@@ -121,57 +88,17 @@
             label: $t('Include Subtasks'),
             callbacks:[],
         },
+        {
+            key: 'parent_task_id',
+            value: parentItem.id, 
+            type: 'hiddenValue',
+            callbacks:[],
+        },
         // Add more filters as needed
     ];
 </script>
 
-<App>
 
-    <div slot="hero" class="hero-contents">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            <i class="bi bi-check2-square"></i> 
-            {$t('Tasks')}
-        </h2>
-    </div>
-
-    <!-- Pass `navItems` to `ContextNav` and use the `actions` slot -->
-    <ContextNav {navItems}>
-        <div class="context-actions" slot="actions">
-
-            <button 
-                class="btn btn-primary" 
-                on:click={openUserModal}
-            >
-                {$t('Add Task')}
-                <i class="bi bi-plus-lg"></i>
-            </button>
-        
-            <ModalBox
-                bind:this={modal}
-            >
-                <span slot="title">{$t('Add A Task')}</span>
-        
-                <div slot="staticContent">
-                    <ModalAddBody bind:formInstance />
-                </div>
-        
-                <div slot="footer">
-                    <!-- <button type="button" class="btn btn-secondary" on:click={() => console.log('Custom Close')}>
-                        Custom Close
-                    </button> -->
-                    <button type="button" class="btn btn-primary" on:click={handleFormSubmit}>
-                        {$t('Add Task')}
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
-                </div>
-            </ModalBox>
-
-            <!-- <a class="btn btn-primary" href="{route('tasks.create')}">
-                {$t('Add Task')}
-                <i class="bi bi-plus-lg"></i>
-            </a> -->
-        </div>
-    </ContextNav>
 
     <!-- Datatable Component -->
     <Datatable 
@@ -179,7 +106,7 @@
         {columns}
         datatableControls={{
             search: {
-                enabled: true,
+                enabled: false,
                 debounce: 300,
                 //trigger: 'onKeystroke' 
                 //fields:[],
@@ -199,5 +126,3 @@
             /> -->
         </div>
     </Datatable>
-
-</App>

@@ -7,7 +7,7 @@
     import TableCell from '@tiptap/extension-table-cell';
     import TableHeader from '@tiptap/extension-table-header';
     import TableRow from '@tiptap/extension-table-row';
-    //import StarterKit from '@tiptap/starter-kit';
+    import StarterKit from '@tiptap/starter-kit';
     import BulletList from '@tiptap/extension-bullet-list'
     import Document from '@tiptap/extension-document'
     import ListItem from '@tiptap/extension-list-item'
