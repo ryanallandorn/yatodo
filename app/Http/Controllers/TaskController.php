@@ -271,11 +271,66 @@ class TaskController extends Controller
     }
 
 
+    /**
+     * Main Method to Apply All Filters
+     */
+    private function applyFilters(Request $request, $tasksQuery)
+    {
+        $filters = $request->get('filters', []);
+
+        // Apply each filter using the central filters array
+        $this->applyIncludeSubtasksFilter($filters, $tasksQuery);
+        $this->applyFilterExcludeIds($filters, $tasksQuery);
+        $this->applyFilterByProjectId($filters, $tasksQuery);
+    }
+
+
+    /**
+     * Method to Handle `includeSubtasks` Filter
+     */
+    private function applyIncludeSubtasksFilter(array $filters, $tasksQuery)
+    {
+        $includeSubtasks = $filters['includeSubtasks'] ?? false;
+        if (!$includeSubtasks || $includeSubtasks === 'false') {
+            // Exclude child tasks if `includeSubtasks` is false
+            $tasksQuery->whereNull('tasks.parent_task_id');
+        }
+    }
+
+
+    /**
+     * Method to Handle Excluding Specific IDs
+     */
+    private function applyFilterExcludeIds(array $filters, $tasksQuery)
+    {
+        $filterExcludeIds = (array) ($filters['filterExcludeIds'] ?? []);
+        if (!empty($filterExcludeIds)) {
+            $tasksQuery->whereNotIn('tasks.id', $filterExcludeIds);
+        }
+    }
+
+
+    /**
+     * Method to Handle Filtering by `project_id`
+     */
+    private function applyFilterByProjectId(array $filters, $tasksQuery)
+    {
+        $projectId = $filters['project_id'] ?? null;
+        if (!empty($projectId)) {
+            $tasksQuery->where('tasks.project_id', $projectId);
+        }
+    }
+
+
     /*
     * API
     * =================================================================
     */ 
 
+
+    /**
+     * Main API Method
+     */
     public function apiGetMultiple(Request $request, ApiQueryService $apiQueryService)
     {
         // Get search parameters from request
@@ -283,67 +338,50 @@ class TaskController extends Controller
         $searchFields = $request->get('searchFields', []);
         $searchOperator = $request->get('searchOperator', 'AND');
         $primaryTable = 'tasks';
-    
+
         // Get filter parameters from request, excluding `includeSubtasks`
         $filters = $request->get('filters', []);
         unset($filters['includeSubtasks']); // Remove `includeSubtasks` from filters
-    
-        $includeSubtasks = $request->input('filters.includeSubtasks', false);
-    
-        // Get IDs to exclude, ensure it's an array
-        $filterExcludeIds = (array) $request->get('filterExcludeIds', []);
-    
+
         // Get order parameters from request
         $orderBy = $request->get('orderBy', "{$primaryTable}.id");
         $orderDirection = $request->get('orderDirection', 'asc');
-    
+
         // Get pagination parameters from request
         $limit = $request->get('limit', 10);
         $page = $request->get('page', 1);
-    
-        // Build the query using the service methods
+
+        // Build the base query
         $tasksQuery = Task::query()
-            ->select('tasks.*', 'projects.id as project_id', 'projects.name as project_name', 'parent_tasks.id as parent_task_id', 'parent_tasks.name as parent_task_name')
+            ->select(
+                'tasks.*',
+                'projects.id as project_id',
+                'projects.name as project_name',
+                'parent_tasks.id as parent_task_id',
+                'parent_tasks.name as parent_task_name'
+            )
             ->leftJoin('projects', 'tasks.project_id', '=', 'projects.id')
             ->leftJoin('tasks as parent_tasks', 'tasks.parent_task_id', '=', 'parent_tasks.id');
-    
-        // Apply the `includeSubtasks` filter separately
-        if (!$includeSubtasks || $includeSubtasks === 'false') {
-            // Exclude child tasks by default if `includeSubtasks` is false
-            $tasksQuery->whereNull('tasks.parent_task_id');
-        }
-    
-        // Log the SQL query
-        $sqlQuery = $tasksQuery->toSql();
-        $bindings = $tasksQuery->getBindings();
-        Log::channel('debug')->info('SQL Query before pagination:', ['query' => $sqlQuery, 'bindings' => $bindings]);
-    
+
+        // Apply filters and modifications
+        $this->applyFilters($request, $tasksQuery);
+
         // Apply search and filters using the service
         $tasksQuery = $apiQueryService->applySearch($tasksQuery, $searchQuery, $searchFields, $searchOperator);
         $tasksQuery = $apiQueryService->applyFilters($tasksQuery, $filters, $primaryTable);
-    
-        // Exclude specific IDs
-        if (!empty($filterExcludeIds)) {
-            Log::channel('debug')->info('Excluding task IDs:', ['filterExcludeIds' => $filterExcludeIds]);
-            $tasksQuery->whereNotIn("{$primaryTable}.id", $filterExcludeIds);
-        }
-    
+
+        // Apply ordering
         $tasksQuery = $apiQueryService->applyOrder($tasksQuery, $orderBy, $orderDirection);
-    
-        // Calculate total number of records before applying pagination
+
+        // Calculate total number of records before pagination
         $total = $tasksQuery->count();
-    
+
         // Apply pagination
         $tasksQuery = $apiQueryService->applyPagination($tasksQuery, $limit, $page);
-    
-        // Log the SQL query
-        $sqlQuery = $tasksQuery->toSql();
-        $bindings = $tasksQuery->getBindings();
-        Log::channel('debug')->info('SQL Query after pagination:', ['query' => $sqlQuery, 'bindings' => $bindings]);
-    
+
         // Execute the query and return results
         $tasks = $tasksQuery->get();
-    
+
         // Return response with additional pagination information
         return response()->json([
             'items' => $tasks,
@@ -352,11 +390,11 @@ class TaskController extends Controller
             'page' => $page,
         ]);
     }
-    
-    
-    
 
-    // Method for fetching a single task
+
+    /**
+     * Method for fetching a single task
+     */
     public function apiGetSingle($id)
     {
         // Validate that an ID is provided (although not strictly necessary since it's part of the route)

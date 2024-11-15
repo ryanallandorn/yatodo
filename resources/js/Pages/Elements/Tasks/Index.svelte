@@ -26,11 +26,9 @@
     }
 
     async function handleFormSubmit() {
-        alert('hi');
         console.log(formInstance);
         await tick(); // Wait for the DOM to update
         if (formInstance && formInstance.externalSubmit) {
-            alert('wee');
             formInstance.externalSubmit(); // Call the exposed method
         }
     }
@@ -107,7 +105,7 @@
             type: 'FilterSwitch',
             label: $t('Include Subtasks'),
             callbacks:[],
-        }
+        },
         // Add more filters as needed
     ];
 </script>

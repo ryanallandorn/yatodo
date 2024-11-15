@@ -1,10 +1,26 @@
 <script>
 // resources/js/Components/Structure/Nav/InnerMain.svelte
 
+import { t } from 'svelte-i18n';
+import { page} from "@inertiajs/svelte";
+
     export let navItems = [];
 
     // Check if a given path is active based on the current window location
-    const isActive = (link) => window.location.pathname.startsWith(link);
+    const isActive = (link) => {
+        // Create a URL object for the current location
+        const currentUrl = new URL(window.location.href);
+
+        // Check if the link is a fully qualified URL
+        try {
+            const linkUrl = new URL(link, window.location.origin);
+            return currentUrl.pathname === linkUrl.pathname;
+        } catch {
+            // If link is not fully qualified, fallback to comparing pathnames
+            return currentUrl.pathname.startsWith(link);
+        }
+    };
+
 </script>
 
 <ul class="nav nav-tabs">

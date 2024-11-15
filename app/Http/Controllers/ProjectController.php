@@ -94,14 +94,14 @@ class ProjectController extends Controller
     /**
      * 
      */
-    public function show(Project $project)
+    public function show(Project $project, $view = null)
     {
-        //return view('elements.projects.show', compact('project'));
+        // Return the main project page with the tab view passed as a prop
         return Inertia::render('Elements/Projects/Show/Page', [
             'project' => $project,
+            'tab' => $view, // Pass the view name as 'tab'
         ]);
     }
-
 
     /**
      * 
@@ -134,6 +134,25 @@ class ProjectController extends Controller
         return response()->json(['message' => 'Project deleted successfully']);
     }
 
+
+    /**
+     * 
+     */
+    public function handleTabView(Project $project, $view)
+    {
+        // Determine which view to return based on the $view parameter
+        switch ($view) {
+            case 'tasks':
+                // Logic to get tasks related to the project
+                return view('projects.tabs.tasks', compact('project'));
+            case 'notes':
+                // Logic to get notes related to the project
+                return view('projects.tabs.notes', compact('project'));
+            // Add more cases as needed for additional tabs
+            default:
+                abort(404); // Return a 404 response if the view is not recognized
+        }
+    }
 
 
     /**

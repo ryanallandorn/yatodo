@@ -29,10 +29,14 @@ Route::middleware([
 
 
     // Projects
-    Route::resource('projects', ProjectController::class);
+    Route::resource('projects', ProjectController::class)
+    ->except(['show']); // Exclude the default 'show' route
     Route::post('projects/datatable', [ProjectController::class, 'getDatatableData'])->name('projects.datatable');
-    Route::get('projects/{project}/view', [ProjectController::class, 'show'])->name('projects.view');
-    Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+    // Route::get('projects/{project}/view', [ProjectController::class, 'show'])->name('projects.view');
+    // Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
+    // Use a single route for both the main project view and tab views
+    Route::get('projects/{project}/{view?}', [ProjectController::class, 'show'])->name('projects.show');
+
 
 
     // Tasks
@@ -40,6 +44,7 @@ Route::middleware([
     Route::post('tasks/datatable', [taskController::class, 'getDatatableData'])->name('tasks.datatable');
     Route::get('tasks/{task}/view', [taskController::class, 'show'])->name('tasks.view');
     Route::get('tasks/{task}/edit', [taskController::class, 'edit'])->name('tasks.edit');
+    
 
     // Route::get('todos', Todos::class);
 

@@ -8,28 +8,15 @@
     import { writable } from 'svelte/store';
 
     import App from "@layouts/App.svelte";
-
     import ModalBox from '@components/UI/Modal/Box.svelte';
     import CreateProjectForm from '@pages/Elements/Projects/Forms/Store.svelte';
-
     import ContextNav from '@components/Structure/Nav/Context.svelte';
     import Datatable from '@components/UI/Datatable/Datatable.svelte';
     import ActionsDropdown from '@components/Actions/Dropdown.svelte';
     import LinkViewPage from '@components/UI/Datatable/Slots/LinkViewPage.svelte';
 
-
     let modal; // Store the modal instance reference
     let formInstance;
-
-    function openUserModal() {
-        modal.open(); // Access the modal's `open` method through the bound instance
-    }
-
-    function handleFormSubmit() {
-        if (formInstance && formInstance.externalSubmit) {
-            formInstance.externalSubmit(); // Call the exposed method
-        }
-    }
 
     // Define nav items and actions
     let navItems = [
@@ -59,10 +46,6 @@
             }
         },
         { 
-            key: 'parent_project_id', 
-            label: 'Parent Project' 
-        },
-        { 
             key: 'actions', 
             label: 'Actions', 
             hideLabel: true, 
@@ -73,6 +56,18 @@
             }
         }
     ];
+
+    let filters = [];
+
+    function openUserModal() {
+        modal.open(); // Access the modal's `open` method through the bound instance
+    }
+
+    function handleFormSubmit() {
+        if (formInstance && formInstance.externalSubmit) {
+            formInstance.externalSubmit(); // Call the exposed method
+        }
+    }
 
 </script>
 
@@ -125,33 +120,19 @@
 
     <Datatable 
         apiUrl="{route('api.get.projects')}"
-        columns={[
-            { 
-                key: 'id', 
-                label: 'ID' 
+        {columns}
+        datatableControls={{
+            search: {
+                enabled: true,
+                debounce: 300,
+                //trigger: 'onKeystroke' 
+                //fields:[],
             },
-            { 
-                key: 'name', 
-                label: 'Name', 
-                render: {
-                    component: LinkViewPage,
-                    props: {
-                        route: (item) => route('projects.show', item.id), 
-                        displaySlot: (item) => item.name 
-                    }
-                }
-            },
-            { 
-                key: 'actions', 
-                label: 'Actions', 
-                hideLabel: true, 
-                icon: 'bi bi-three-dots-vertical', 
-                render: {
-                    component: ActionsDropdown,
-                    props: {}
-                }
+            pageLength: {
+                enabled:true,
             }
-        ]} 
+        }}
+        {filters}
     />
 
 </App>
