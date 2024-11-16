@@ -1,0 +1,20 @@
+// Import Google Fonts if needed
+// Styling for buttons and links with underline effect
+html,
+body {
+    .interactable-underline {
+        color: $color-green-secondary !important; // Customize text color
+        text-decoration: underline 0.15em dotted; // Dotted underline by default
+        text-decoration-color: $color-green-secondary; // Initial underline color
+        text-underline-offset: 0.2em; // Initial underline offset
+        transition: text-decoration 400ms, text-underline-offset 400ms;
+        font-weight:400;
+
+        // Hover and focus effect
+        &:hover,
+        &:focus {
+            text-decoration: underline 0.15em solid; // Transition to solid underline
+            text-underline-offset: 0.4em; // Increase offset to animate from the center
+        }
+    }
+}

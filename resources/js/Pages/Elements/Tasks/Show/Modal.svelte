@@ -6,6 +6,7 @@
     import ModalBox from '@components/UI/Modal/Box.svelte';
     import Accordion from '@components/UI/Accordion/Accordion.svelte';
     import AccordionItem from '@components/UI/Accordion/AccordionItem.svelte';
+    import TiptapEditor  from '@components/Fields/Tiptap/Editor.svelte';
 
     export let apiGetRoute = null;
     export let displaySlot = '';
@@ -23,7 +24,7 @@
     };
 </script>
 
-<span on:click={openModal} class="cursor-pointer text-primary">
+<span on:click={openModal} class="cursor-pointer text-primary interactable-underline">
     {displaySlot}
 </span>
 
@@ -31,6 +32,7 @@
     bind:this={modal} 
     fetchUrl={apiGetRoute}
     on:dataLoaded={handleDataLoaded}
+    showFooter={false}
 >
     <span slot="title">{modalTitle}</span>
     
@@ -39,7 +41,7 @@
         <div class="row align-items-center">
             <div class="col-9">
   
-                <Accordion id="taskModalAccordions">
+                <Accordion id="taskModalAccordions" cssClass="simplified-sides">
                     <AccordionItem 
                         headerId="taskModalAccordionDescription" 
                         collapseId="collapseModalAccordionDescription" 
@@ -49,7 +51,20 @@
                             {$t('Description')}
                         </span>
                         <div slot="body">
-                            {$t('Description')}
+
+                            {route('api.update.task', { task: 1 })}
+                            
+                            <TiptapEditor
+                                modelValue="<p>Hello, world!</p>"
+                                autosave={true}
+                                on:update={(event) => console.log('Editor content updated:', event.detail.value)}
+                                apiPutRoute="{route('api.update.task', { task: 1 })}"
+                            >
+                            {#if fetchedData?.description}
+                                {@html fetchedData.description}
+                            {/if}
+                            </TiptapEditor>
+                        
                         </div>
                     </AccordionItem>
                     <AccordionItem 
@@ -126,7 +141,7 @@
 
             </div>
             <div class="col-3">
-              Right
+              Right fart
             </div>
           </div>
 
@@ -143,4 +158,5 @@
             {$t('Close')}
         </button>
     </div>
+    
 </ModalBox>

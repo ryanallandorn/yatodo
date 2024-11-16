@@ -10,10 +10,10 @@
 
 
 * {
-    font-family: "Open Sans", sans-serif;
+    font-family: "Fira Sans", sans-serif; // Use Fira Sans, with sans-serif as a fallback
     font-optical-sizing: auto;
-
 }
+
 
 $enable-negative-margins: true;
 
@@ -46,7 +46,8 @@ $enable-negative-margins: true;
 @import "./sizing.scss";
 @import "./images.scss";
 @import "./typography";
-
+@import "./buttons";
+@import "./accordion";
 
 @import "./collapse.scss";
 
@@ -80,3 +81,18 @@ $enable-negative-margins: true;
 
 
 @import "./fields/multi-line.scss";
+
+
+
+// // Base styling
+// * {
+//     box-sizing: border-box;
+// }
+
+// body main {
+//     font-family: "Open Sans", sans-serif;
+//     margin: 0;
+//     padding: 1rem;
+//     background: linear-gradient(45deg, turquoise, darkorchid, deeppink, orange);
+//     color: white;
+// }

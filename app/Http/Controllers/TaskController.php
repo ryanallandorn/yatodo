@@ -132,28 +132,47 @@ class TaskController extends Controller
 
 
     // Update the specified task in the database
+    // public function update(Request $request, Task $task)
+    // {
+    //     $validatedData = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'description' => 'nullable|string',
+    //         'project_id' => 'required|exists:projects,id', 
+    //         'parent_task_id' => [
+    //             'nullable',
+    //             'exists:tasks,id',
+    //             Rule::notIn([$task->id]), // Exclude the current task's id
+    //         ],
+    //     ]);
+    
+    //     Log::channel('debug')->info('Validated taskController::update:', $validatedData);
+    
+    //     $task->update($validatedData);
+    
+    //     Log::channel('debug')->info('Task updated successfully', ['name' => $validatedData['name']]);
+    
+    //     return response()->json($task);
+    // }
+    
+
     public function update(Request $request, Task $task)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'project_id' => 'required|exists:projects,id', 
-            'parent_task_id' => [
-                'nullable',
-                'exists:tasks,id',
-                Rule::notIn([$task->id]), // Exclude the current task's id
-            ],
-        ]);
-    
-        Log::channel('debug')->info('Validated taskController::update:', $validatedData);
-    
-        $task->update($validatedData);
-    
-        Log::channel('debug')->info('Task updated successfully', ['name' => $validatedData['name']]);
-    
-        return response()->json($task);
-    }
-    
+{
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'content' => 'nullable|string', // Add this line to validate the content field
+        'project_id' => 'required|exists:projects,id',
+        'parent_task_id' => [
+            'nullable',
+            'exists:tasks,id',
+            Rule::notIn([$task->id]),
+        ],
+    ]);
+
+    $task->update($validatedData); // Update the task with the new data
+
+    return response()->json($task);
+}
 
     // Remove the specified task from the database
     public function destroy(task $task)

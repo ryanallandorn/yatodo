@@ -26,11 +26,43 @@
 <App>
 
     <TiptapEditor
-    modelValue="<p>Hello, world!</p>"
-    autosave={true}
-    on:update={(event) => console.log('Editor content updated:', event.detail.value)}
-/>
+        modelValue="<p>Hello, world!</p>"
+        autosave={true}
+        on:update={(event) => console.log('Editor content updated:', event.detail.value)}
+    >
 
+        <h3>Have you seen our tables? They are amazing!</h3>
+        <ul>
+            <li>Tables with rows, cells and headers (optional)</li>
+            <li>Support for <code>colgroup</code> and <code>rowspan</code></li>
+            <li>And even resizable columns (optional)</li>
+        </ul>
+        <p>Here is an example:</p>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th colspan="3">Description</th>
+                </tr>
+                <tr>
+                    <td>Cyndi Lauper</td>
+                    <td>Singer</td>
+                    <td>Songwriter</td>
+                    <td>Actress</td>
+                </tr>
+                <tr>
+                    <td>Marie Curie</td>
+                    <td>Scientist</td>
+                    <td>Chemist</td>
+                    <td>Physicist</td>
+                </tr>
+                <tr>
+                    <td>Indira Gandhi</td>
+                    <td>Prime minister</td>
+                    <td colspan="2">Politician</td>
+                </tr>
+            </tbody>
+        </TiptapEditor>
 
     <button class="btn btn-primary" on:click={openUserModal}>
         Open User Modal

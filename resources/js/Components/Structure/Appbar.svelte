@@ -9,6 +9,7 @@
     import LogoIcon from '@components/Branding/LogoIcon.svelte';
     import ColorSwitcherAppbarNav from '@components/UI/States/ColorSwitcher/AppbarNav.svelte';
     import AppbarUserNav from '@components/Structure/Appbar/UserNav.svelte';
+    import AppbarTimerNav from '@components/Structure/Appbar/TimerNav.svelte';
     import AppbarCommentNav from '@components/Structure/Appbar/CommentNav.svelte';
 
     // import Timer from '$lib/components/Timer.svelte'; // Your timer component
@@ -50,6 +51,7 @@
             </span>
             <ColorSwitcherAppbarNav />
             <AppbarCommentNav />
+            <AppbarTimerNav />
             <AppbarUserNav />
         </div>
     </div>

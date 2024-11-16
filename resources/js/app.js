@@ -43,6 +43,12 @@ setupI18n().then(() => {
         },
         setup({ el, App, props }) {
             new App({ target: el, props })
+
+            // Global tooltip initialization
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(tooltipTriggerEl => {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
         },
         progress:false,
         // progress: {

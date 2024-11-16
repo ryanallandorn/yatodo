@@ -3,8 +3,33 @@ html body {
 
         padding:1rem;
 
-        table {
-            background:red;
+        // table {
+        //     background:red;
+        // }
+
+
+        
+    }
+
+
+
+    .card-wysiwyg {
+        .btn-toolbar {
+            // background:blue;
+            .btn {
+                padding:0.25rem;
+            }
         }
+
+        i {
+            font-size:1.25rem;
+        }
+
+        .icon {
+            width: 1em;
+            height: 1em;
+            fill: currentColor; /* Makes the icon inherit the text color */
+        }
+
     }
 }

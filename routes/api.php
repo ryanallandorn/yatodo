@@ -61,8 +61,11 @@ Route::prefix('get')->group(function () {
     Route::get('/users', [UserController::class, 'apiGet'])->name('api.get.users');
     Route::get('/projects', [ProjectController::class, 'apiGetMultiple'])->name('api.get.projects');
     Route::get('/projects/{id}', [ProjectController::class, 'apiGetSingle'])->name('api.get.project');
+
+    //
     Route::get('/tasks', [TaskController::class, 'apiGetMultiple'])->name('api.get.tasks');
     Route::get('/task/{id}', [TaskController::class, 'apiGetSingle'])->name('api.get.task');
+
 
 
     // Route::post('/get/tasks', [TaskController::class, 'store']);
@@ -71,7 +74,9 @@ Route::prefix('get')->group(function () {
     // Route::delete('/get/tasks/{task}', [TaskController::class, 'destroy']);
 
 
-    
 
+});
 
+Route::prefix('put')->group(function () {
+    Route::put('/task/{task}', [TaskController::class, 'update'])->name('api.update.task');
 });

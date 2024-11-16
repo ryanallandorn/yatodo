@@ -2,6 +2,8 @@
 
 <script>
     import { Inertia } from '@inertiajs/inertia';
+    import { mdiTimer } from '@mdi/js';
+    import IconMdi from '@components//UI/Icons/Mdi.svelte';
 
     export let modelId;
     export let wrapperCssClass = ''; 
@@ -27,8 +29,7 @@
 <div class={`dropdown ${wrapperCssClass}`}>
     <button class={`btn dropdown-toggle ${buttonCssClass}`} type="button" data-bs-toggle="dropdown" aria-expanded="false">
         <slot name="buttonContents">
-            <!-- Default button content if no slot content is provided -->
-            <i class="bi bi-three-dots-vertical"></i>
+            <IconMdi icon={mdiTimer} />
         </slot>
     </button>
     <div class={`dropdown-menu ${dropdownCssClass}`}>

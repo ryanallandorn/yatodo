@@ -1,0 +1,21 @@
+html body {
+    .simplified-sides {
+        // * {
+        //     background:red;
+        // }
+
+        .accordion-item {
+            border-left:none;
+            border-right:none;
+            border-radius:0;
+        }
+        .accordion-button {
+            padding-left:0.5rem;
+            padding-right:0.5rem;
+            border-radius:0;
+        }
+        .accordion-body {
+            padding:0;
+        }
+    }
+}
