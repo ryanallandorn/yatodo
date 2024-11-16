@@ -82,8 +82,6 @@
     <!-- Pass `navItems` to `ContextNav` and use the `actions` slot -->
     <ContextNav {navItems}>
         <div class="context-actions" slot="actions">
-
-
             <button 
                 class="btn btn-primary" 
                 on:click={openUserModal}

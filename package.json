@@ -26,6 +26,7 @@
         "@hocuspocus/provider": "^2.13.7",
         "@inertiajs/progress": "^0.2.7",
         "@inertiajs/svelte": "^1.2.0",
+        "@mdi/js": "^7.4.47",
         "@sveltejs/vite-plugin-svelte": "^3.1.2",
         "@tiptap/core": "^2.9.1",
         "@tiptap/extension-bubble-menu": "^2.9.1",

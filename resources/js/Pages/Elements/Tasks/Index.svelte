@@ -9,6 +9,7 @@
     import ModalBox from '@components/UI/Modal/Box.svelte';
     //import CreateTaskForm from '@pages/Elements/Tasks/Forms/StoreSingle.svelte';
     import ModalAddBody from '@pages/Elements/Tasks/Modal/Add/Body.svelte';
+    import ModalShowBody from '@pages/Elements/Tasks/Modal/Show/Body.svelte';
 
     import ContextNav from '@components/Structure/Nav/Context.svelte';
     import Datatable from '@components/UI/Datatable/Datatable.svelte';
@@ -17,8 +18,7 @@
     import CollapseRow from '@components/UI/Datatable/Cells/CollapseRow.svelte';
     import SubtasksDatatable from '@pages/Elements/Tasks/SubtasksDatatable.svelte';
     import LinkViewModal from '@pages/Elements/Tasks/Show/Modal.svelte';
-
-
+    import { mdiTable, mdiChartGantt, mdiViewColumnOutline, mdiCalendarOutline } from '@mdi/js';
 
     let modal; // Store the modal instance reference
     let formInstance;
@@ -38,19 +38,51 @@
     // Define nav items and actions
     let navItems = [
         {
-            name: 'All Tasks',
-            icon: 'bi bi-globe',
+            name: $t('Table'),
+            showText:false,
+            tooltip: $t('Table'), 
+            // iconClass: 'bi bi-globe',
+            iconPath: mdiTable,
             link: route('tasks.index'),
             children: []
         },
+        {
+            name: $t('Boards'),
+            showText:false,
+            tooltip: $t('Boards'), 
+            // iconClass: 'bi bi-globe',
+            iconPath: mdiViewColumnOutline,
+            link: route('tasks.index'),
+            children: []
+        },
+        {
+            name: $t('Gantt'),
+            showText:false,
+            tooltip:$t('Gantt'),
+            //iconClass: 'bi bi-globe',
+            //iconHtml: '<span slot="button" class="material-symbols-outlined d-inline-flex">chart_gantt</span>',
+            iconPath: mdiChartGantt,
+            link: route('tasks.index'),
+            children: []
+        },
+        {
+            name: $t('Calendar'),
+            showText:false,
+            //iconClass: 'bi bi-globe',
+            // iconHtml: '<span slot="button" class="material-symbols-outlined d-inline-flex">table</span>',
+            iconPath: mdiCalendarOutline,
+            link: route('tasks.index'),
+            children: []
+        },
+
     ];
 
     // Define columns with labels
     const columns = [
-        { 
-            key: 'id', 
-            label: 'ID' 
-        },
+        // { 
+        //     key: 'id', 
+        //     label: 'ID' 
+        // },
         { 
             key: 'name', 
             label: 'Name', 

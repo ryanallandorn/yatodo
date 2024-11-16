@@ -1,4 +1,7 @@
 <script>
+
+// resources/js/Components/Fields/Tiptap/Editor.svelte
+
     import { onMount, onDestroy } from 'svelte';
 
     //

@@ -1,8 +1,9 @@
 <script>
 // resources/js/Components/Structure/Nav/InnerMain.svelte
 
-import { t } from 'svelte-i18n';
-import { page} from "@inertiajs/svelte";
+    import { onMount } from 'svelte';
+    import { t } from 'svelte-i18n';
+    import { page} from "@inertiajs/svelte";
 
     export let navItems = [];
 
@@ -21,6 +22,14 @@ import { page} from "@inertiajs/svelte";
         }
     };
 
+    onMount(() => {
+        // Initialize all tooltips on the page
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach((tooltipTriggerEl) => {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+
 </script>
 
 <ul class="nav nav-tabs">
@@ -28,10 +37,31 @@ import { page} from "@inertiajs/svelte";
         {#if navItem.children.length === 0}
             <li class="nav-item">
                 <a
-                    class="nav-link {isActive(navItem.link) ? 'active' : ''}"
-                    href={navItem.link}
+                    class="nav-link {isActive(navItem?.link) ? 'active' : ''}"
+                    href={navItem?.link}
+                    data-bs-toggle={navItem?.tooltip ? "tooltip" : null}
+                    data-bs-placement="top"
+                    data-bs-title={navItem?.tooltip}
                 >
-                    <i class={navItem.icon}></i> {navItem.name}
+                    {#if navItem?.iconClass}
+                        <i class={navItem.iconClass}></i> 
+                    {/if}
+                    {#if navItem?.iconHtml}
+                        {@html navItem.iconHtml}
+                    {/if}
+                    {#if navItem?.iconPath}
+                    <svg 
+                        viewBox="0 0 24 24" 
+                        width="24" 
+                        height="24"
+                        class="inline-block align-middle"
+                    >
+                        <path d={navItem.iconPath} fill="currentColor" />
+                    </svg>
+                {/if}
+                {#if navItem?.showText !== false}
+                    {navItem.name}
+                {/if}
                 </a>
             </li>
         {:else}

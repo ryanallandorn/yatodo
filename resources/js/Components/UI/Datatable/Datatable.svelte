@@ -110,7 +110,7 @@
             console.error("Error fetching data:", error);
             showErrorNotification("Failed to load data. Please try again.");
         } finally {
-            setTimeout(() => { loading = false; }, 300);
+            setTimeout(() => { loading = false; }, 200);
         }
     };
 

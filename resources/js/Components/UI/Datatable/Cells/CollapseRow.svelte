@@ -79,7 +79,7 @@
                 buttonElement.querySelector('.bi').classList.replace('bi-chevron-right', 'bi-chevron-down');
                 parentRow.classList.add('tr-expanded');
                 
-                await new Promise(resolve => setTimeout(resolve, 500));
+                //await new Promise(resolve => setTimeout(resolve, 500));
                 const data = mockData;
                 
                 childRow = document.createElement('tr');
@@ -88,9 +88,9 @@
                 
                 const indentCell = document.createElement('td');
                 const contentCell = document.createElement('td');
-                contentCell.colSpan = tableElement.querySelectorAll('th').length - 1;
+                contentCell.colSpan = tableElement.querySelectorAll('th').length; // - 1; '100%'; //
                 
-                childRow.appendChild(indentCell);
+                //childRow.appendChild(indentCell);
                 childRow.appendChild(contentCell);
                 parentRow.insertAdjacentElement('afterend', childRow);
                 

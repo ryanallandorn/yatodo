@@ -1,18 +1,17 @@
-
 <script>
 
-// esources/js/Components/Modal.svelte 
+// resources/js/Components/UI/Modal/Box.svelte
 
     import { createEventDispatcher, onMount } from 'svelte';
-    import 'bootstrap/js/dist/modal'; // Import Bootstrap's modal JS
+    import 'bootstrap/js/dist/modal';
 
     let modalElement;
     let bootstrapModal;
     const dispatch = createEventDispatcher();
 
-    export let initialData = null;  // Optional initial data
-    export let fetchUrl = '';       // Optional API endpoint
-    export let fetchOnLoad;         // Optional function to fetch data
+    export let initialData = null;
+    export let fetchUrl = '';
+    export let fetchOnLoad = null;
 
     let loading = false;
     let fetchedData = null;
@@ -30,8 +29,10 @@
         loading = true;
         try {
             fetchedData = await fetchFunction();
+            dispatch('dataLoaded', fetchedData);
         } catch (error) {
             console.error('Error fetching data:', error);
+            dispatch('error', error);
         } finally {
             loading = false;
         }
@@ -39,7 +40,7 @@
 
     export function close() {
         bootstrapModal.hide();
-        dispatch('close'); // Emit a custom 'close' event
+        dispatch('close');
     }
 
     onMount(() => {
@@ -49,42 +50,28 @@
 
 <div
     bind:this={modalElement}
-    class="modal fade"
+    class="modal modal-wide fade"
     tabindex="-1"
-    aria-labelledby="exampleModalLabel"
+    aria-labelledby="modalLabel"
     aria-hidden="true"
 >
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
+                <h5 class="modal-title" id="modalLabel">
                     <slot name="title">Default Title</slot>
                 </h5>
                 <button type="button" class="btn-close" aria-label="Close" on:click={close}></button>
             </div>
             <div class="modal-body">
-                {#if initialData}
-                    <div>
-                        <h6>Initial Data</h6>
-                        <pre>{JSON.stringify(initialData, null, 2)}</pre>
-                    </div>
-                {/if}
-
                 {#if loading}
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-                {:else if fetchedData}
-                    <div>
-                        <h6>Fetched Data</h6>
-                        <pre>{JSON.stringify(fetchedData, null, 2)}</pre>
-                    </div>
-                {:else if fetchUrl || fetchOnLoad}
-                    <p>No data available.</p>
+                {:else}
+                    <slot name="dynamicContent" {fetchedData} {initialData} />
+                    <slot name="staticContent" {fetchedData} {initialData} />
                 {/if}
-
-                <!-- Render additional static content -->
-                <slot name="staticContent" />
             </div>
             <div class="modal-footer">
                 <slot name="footer">
@@ -94,7 +81,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* Optional: Add custom modal styling */
-</style>

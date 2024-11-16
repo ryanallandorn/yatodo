@@ -4,3 +4,13 @@
     background:red;
     margin:-1rem;
 }
+
+
+html body {
+
+    .modal {
+        &.modal-wide {
+            width:700px;
+        }
+    }
+}

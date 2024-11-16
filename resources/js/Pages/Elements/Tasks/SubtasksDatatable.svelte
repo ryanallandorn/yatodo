@@ -27,10 +27,10 @@ export let parentItem;
 
     // Define columns with labels
     const columns = [
-        { 
-            key: 'id', 
-            label: 'ID' 
-        },
+        // { 
+        //     key: 'id', 
+        //     label: 'ID' 
+        // },
         { 
             key: 'name', 
             label: 'Name', 
@@ -43,30 +43,31 @@ export let parentItem;
                 }
             }
         },
-        { 
-            key: 'project_name', 
-            label: $t('Project'), 
-            render: {
-                component: LinkViewPage,
-                props: {
-                    route: (item) => route('projects.show', item.project_id), 
-                    displaySlot: (item) => item.project_name 
-                }
-            }
-        },
-        // reactive if filter parent
-        { 
-            key: 'name', 
-            label: $t('Parent Task'), 
-            render: {
-                component: LinkViewModal,
-                props: {
-                    apiGetRoute: (item) => `/api/get/task/${item.parent_task_id}`,
-                    displaySlot: (item) => item.parent_task_name, 
-                    modalTitle: (item) => item.parent_task_name, 
-                }
-            }
-        },
+        // make conditional
+        // { 
+        //     key: 'project_name', 
+        //     label: $t('Project'), 
+        //     render: {
+        //         component: LinkViewPage,
+        //         props: {
+        //             route: (item) => route('projects.show', item.project_id), 
+        //             displaySlot: (item) => item.project_name 
+        //         }
+        //     }
+        // },
+        // // reactive if filter parent
+        // { 
+        //     key: 'name', 
+        //     label: $t('Parent Task'), 
+        //     render: {
+        //         component: LinkViewModal,
+        //         props: {
+        //             apiGetRoute: (item) => `/api/get/task/${item.parent_task_id}`,
+        //             displaySlot: (item) => item.parent_task_name, 
+        //             modalTitle: (item) => item.parent_task_name, 
+        //         }
+        //     }
+        // },
         { 
             key: 'actions', 
             label: 'Actions', 
