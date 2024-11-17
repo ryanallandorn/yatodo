@@ -9,7 +9,7 @@
     import ModalBox from '@components/UI/Modal/Box.svelte';
     //import CreateTaskForm from '@pages/Elements/Tasks/Forms/StoreSingle.svelte';
     import ModalAddBody from '@pages/Elements/Tasks/Modal/Add/Body.svelte';
-    import ModalShowBody from '@pages/Elements/Tasks/Modal/Show/Body.svelte';
+    //import ModalShowBody from '@pages/Elements/Tasks/Modal/Show/Body.svelte';
 
     import ContextNav from '@components/Structure/Nav/Context.svelte';
     import Datatable from '@components/UI/Datatable/Datatable.svelte';

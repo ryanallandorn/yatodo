@@ -9,7 +9,7 @@ import { kebabCase } from 'lodash';
     let sidebarNav = [
         {
             name: 'Dashboard',
-            icon: 'bi bi-speedometer2',
+            icon: 'bi bi-speedometer2', //  // 'ri-briefcase-line'
             link: '/',
             children: []
         },

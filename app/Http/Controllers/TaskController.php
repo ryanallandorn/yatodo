@@ -130,49 +130,172 @@ class TaskController extends Controller
     }
 
 
+    /**
+     * 
+     */
+    protected function validateField(Request $request, $fieldName)
+    {
+        // Define an associative array with field-specific validation rules
+        $fieldValidationRules = [
+            'description' => 'nullable|string|max:1000',
+            'completed' => 'required|boolean',
+            // Add more fields as needed
+        ];
+    
+        // Check if the field has defined validation rules
+        if (!array_key_exists($fieldName, $fieldValidationRules)) {
+            throw new \Exception("Validation rules not defined for the field: $fieldName");
+        }
+    
+        // Prepare the rules in the format expected by the validator
+        $rules = [$fieldName => $fieldValidationRules[$fieldName]];
+    
+        // Validate and return the validated data
+        return $request->validate($rules);
+    }
 
-    // Update the specified task in the database
-    // public function update(Request $request, Task $task)
-    // {
-    //     $validatedData = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //         'project_id' => 'required|exists:projects,id', 
-    //         'parent_task_id' => [
-    //             'nullable',
-    //             'exists:tasks,id',
-    //             Rule::notIn([$task->id]), // Exclude the current task's id
-    //         ],
-    //     ]);
+
+    /**
+     * 
+     */
+    public function updateFieldSingle(Request $request, Task $task, $fieldName)
+    {
+        $requestId = uniqid();
+        
+        Log::channel('debug')->info("[$requestId] Update task request received", [
+            'request_data' => $request->all(),
+            'task_id' => $task->id,
+            'field_name' => $fieldName
+        ]);
     
-    //     Log::channel('debug')->info('Validated taskController::update:', $validatedData);
+        try {
+            // Extract the field value from the request
+            $fieldValue = $request->input('fieldValue');
     
-    //     $task->update($validatedData);
+            if (!$fieldName) {
+                throw new \Exception("Field name is required for updating.");
+            }
     
-    //     Log::channel('debug')->info('Task updated successfully', ['name' => $validatedData['name']]);
+            // Validate the field using the custom validateField method
+            $validatedData = $this->validateField($request, $fieldName);
     
-    //     return response()->json($task);
-    // }
+            // Log the validated data
+            Log::channel('debug')->info("[$requestId] Data validated successfully", [
+                'validated_data' => $validatedData
+            ]);
+    
+            // Use the validated data to update the specific field in the task
+            $task->update($validatedData);
+    
+            // Log the successful update
+            Log::channel('debug')->info("[$requestId] Task updated successfully", [
+                'task' => $task->toArray()
+            ]);
+    
+            return response()->json([
+                'messages' => [
+                    [
+                        'content' => 'Task updated successfully',
+                        'type' => 'success',
+                    ]
+                ],
+                'task' => $task
+            ]);
+    
+        } catch (ValidationException $e) {
+            Log::channel('debug')->error("[$requestId] Validation failed", [
+                'errors' => $e->errors()
+            ]);
+    
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+    
+        } catch (\Exception $e) {
+            Log::channel('debug')->error("[$requestId] Unexpected error during task update", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+    
+            return response()->json([
+                'message' => 'An unexpected error occurred',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     
 
+
+    
     public function update(Request $request, Task $task)
-{
-    $validatedData = $request->validate([
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'content' => 'nullable|string', // Add this line to validate the content field
-        'project_id' => 'required|exists:projects,id',
-        'parent_task_id' => [
-            'nullable',
-            'exists:tasks,id',
-            Rule::notIn([$task->id]),
-        ],
-    ]);
-
-    $task->update($validatedData); // Update the task with the new data
-
-    return response()->json($task);
-}
+    {
+        $requestId = uniqid();
+        
+        Log::channel('debug')->info("[$requestId] Update task request received", [
+            'request_data' => $request->all(),
+            'task_id' => $task->id
+        ]);
+    
+        try {
+            $validatedData = $request->validate([
+                'description' => 'nullable|string',
+                '_method' => 'sometimes|string',
+            ]);
+    
+            unset($validatedData['_method']);
+    
+            Log::channel('debug')->info("[$requestId] Data validated successfully", [
+                'validated_data' => $validatedData
+            ]);
+    
+            $task->update($validatedData);
+    
+            Log::channel('debug')->info("[$requestId] Task updated successfully", [
+                'task' => $task->toArray()
+            ]);
+    
+            return response()->json([
+                'messages' => [
+                    [
+                        'content' => 'Task updated successfully',
+                        'type' => 'success',
+                    ]
+                ],
+                'task' => $task
+            ]);
+    
+        } catch (ValidationException $e) {
+            Log::channel('debug')->error("[$requestId] Validation failed", [
+                'errors' => $e->errors()
+            ]);
+    
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+    
+            return back()->withErrors($e->errors());
+    
+        } catch (\Exception $e) {
+            Log::channel('debug')->error("[$requestId] Unexpected error during task update", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+    
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'message' => 'An unexpected error occurred',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+    
+            return back()->with('error', 'An unexpected error occurred');
+        }
+    }
+    
 
     // Remove the specified task from the database
     public function destroy(task $task)

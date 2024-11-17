@@ -51,20 +51,22 @@
                             {$t('Description')}
                         </span>
                         <div slot="body">
-
-                            {route('api.update.task', { task: 1 })}
                             
                             <TiptapEditor
                                 modelValue="<p>Hello, world!</p>"
                                 autosave={true}
                                 on:update={(event) => console.log('Editor content updated:', event.detail.value)}
-                                apiPutRoute="{route('api.update.task', { task: 1 })}"
+                                apiPutRoute={fetchedData?.item?.id ? route('api.update.taskFieldSingle', { 
+                                    task: fetchedData.item.id,
+                                    fieldName:"description"
+                                }) : ''}
+                                fieldName="description"
                             >
-                            {#if fetchedData?.description}
-                                {@html fetchedData.description}
-                            {/if}
+                                {#if fetchedData?.item?.description}
+                                    {@html fetchedData.item.description}
+                                {/if}
                             </TiptapEditor>
-                        
+
                         </div>
                     </AccordionItem>
                     <AccordionItem 

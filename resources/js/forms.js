@@ -5,7 +5,7 @@ import axios from 'axios';
 
 // Internal
 import { showToast, handleCallbackMessages } from './Scripts/toasts';
-import { addSpinner, removeSpinner } from './loading';
+import { addSpinner, removeSpinner } from './Scripts/loading';
 
 
 /**

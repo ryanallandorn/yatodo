@@ -1,11 +1,16 @@
 <script>
-
 // resources/js/Components/Fields/Tiptap/Editor.svelte
-
+    
+    // External Imports
+    import { t } from 'svelte-i18n';
     import { onMount, onDestroy } from 'svelte';
+    import { page } from '@inertiajs/svelte';
+    import { debounce } from 'lodash';
+    import axios from 'axios';
 
-    import { page, router } from '@inertiajs/svelte';
-
+    // Internal Imports
+    import { handleCallbackMessages } from '@scripts/toasts';
+    
     // Tiptap Imports
     import { Editor } from '@tiptap/core';
     import StarterKit from '@tiptap/starter-kit';
@@ -21,20 +26,20 @@
     import Text from '@tiptap/extension-text';
     import TextAlign from '@tiptap/extension-text-align';
     import { BubbleMenu as TiptapBubbleMenu } from '@tiptap/extension-bubble-menu';
+    import Strike from '@tiptap/extension-strike';
+    import Highlight from '@tiptap/extension-highlight';
     
-    // Import the new extensions
-    import Strike from '@tiptap/extension-strike'; // For strikethrough
-    import Highlight from '@tiptap/extension-highlight'; // For highlight
-
     // Components
     import MenuBar from '@components/Fields/Tiptap/ControlBar.svelte';
-
-    export let apiPutRoute; // Accept the API route as a prop
-
+    
+    // Props
+    export let apiPutRoute; // API route prop
+    export let fieldName = 'description'; // Field name prop, defaulting to 'description'
+    
     let editor;
     let element;
     let contentElement; // Element to hold the slot content
-
+    
     // Custom Table Cell Extension with background color support
     const CustomTableCell = TableCell.extend({
         addAttributes() {
@@ -51,7 +56,7 @@
             };
         },
     });
-
+    
     const CustomListItem = ListItem.configure({
         keepMarks: true,
         keepAttributes: false,
@@ -59,7 +64,7 @@
             class: 'list-item',
         },
     });
-
+    
     const CustomTable = Table.extend({
         resizable: true,
         renderHTML({ HTMLAttributes }) {
@@ -69,18 +74,14 @@
             }, ['tbody', 0]];
         },
     });
-
+    
     onMount(() => {
-        // Use the innerHTML of the contentElement as the initial content
         const initialContent = contentElement ? contentElement.innerHTML : '';
-
+    
         editor = new Editor({
             element: element,
             extensions: [
-                StarterKit.configure({
-                    history: true,
-                    listItem: false, // Disable default listItem to use our custom one
-                }),
+                StarterKit.configure({ history: true, listItem: false }),
                 CustomListItem,
                 CustomTable,
                 TableRow,
@@ -90,92 +91,79 @@
                     element: element.querySelector('.bubble-menu-container'),
                     shouldShow: ({ editor }) => editor.isActive('tableCell'),
                 }),
-                Strike, // Add the strikethrough extension
-                Highlight.configure({ // Configure the highlight extension
-                    multicolor: true,
-                }),
-                TextAlign.configure({
-                    types: ['heading', 'paragraph'], // Elements you want to align
-                }),
+                Strike,
+                Highlight.configure({ multicolor: true }),
+                TextAlign.configure({ types: ['heading', 'paragraph'] }),
             ],
-            content: initialContent, // Set the initial content
+            content: initialContent,
             onTransaction: () => {
                 editor = editor;
             },
-            onUpdate: ({ editor }) => {
-                updateField(); // Call updateField when the content updates
+            onUpdate: () => {
+                updateField();
             },
         });
     });
-
+    
     onDestroy(() => {
         if (editor) {
             editor.destroy();
         }
     });
-
-
-    // // Function to handle updating the field
-    // const updateField = async () => {
-    //     if (!apiPutRoute) {
-    //         console.error("API route not specified");
-    //         return;
-    //     }
-
-    //     try {
-    //         console.log(apiPutRoute);
-    //         const response = await fetch(apiPutRoute, {
-    //             method: 'PUT',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-    //             },
-    //             body: JSON.stringify({
-    //                 content: editor.getHTML(),
-    //             }),
-    //         });
-
-    //         if (!response.ok) {
-    //             throw new Error("Failed to update the field");
-    //         }
-
-    //         console.log("Field updated successfully");
-    //     } catch (error) {
-    //         console.error("Error updating field:", error);
-    //     }
-    // };
-
-        // Function to handle updating the field
-        const updateField = () => {
-            if (!apiPutRoute) {
-                console.error("API route not specified");
-                return;
-            }
-
-            // Use Inertia's router to make the request
-            router.put(apiPutRoute, {
-                // _method: 'PUT', // Spoof the PUT method
-                // _token: $page.props.csrf_token,
-                content: editor.getHTML(),
-            }).then(() => {
-                console.log("Field updated successfully");
-            }).catch(error => {
-                console.error("Error updating field:", error);
+    
+    // Debounced update function using Axios
+    const debouncedUpdate = debounce(async (editorContent) => {
+        if (!apiPutRoute) {
+            console.error("API route not specified");
+            return;
+        }
+    
+        try {
+            console.log('Attempting to update task:', {
+                route: apiPutRoute,
+                // [fieldName]: editorContent,
+                fieldName: fieldName,
+                fieldValue: editorContent
             });
-        };
+    
+            const response = await axios.put(apiPutRoute, {
+                [fieldName]: editorContent
+            }, {
+                headers: {
+                    'X-CSRF-TOKEN': $page.props.csrf_token
+                }
+            });
+    
+            handleCallbackMessages(response.data);
+
+            // console.log('Update successful:', response.data);
+    
+        } catch (error) {
+            if (error.response && error.response.status === 422) {
+                console.error("Validation failed:", error.response.data.errors);
+            } else {
+                console.error("An error occurred:", error);
+            }
+        }
+    }, 250);
 
 
-</script>
-
-<div class="card card-wysiwyg p-0 m-2">
-    {#if editor}
-    <div class="card-header p-0">
-        <MenuBar {editor} />
+    
+    
+    const updateField = () => {
+        debouncedUpdate(editor.getHTML());
+    };
+    </script>
+    
+    <div class="card card-wysiwyg p-0 m-2">
+        {#if editor}
+        <div class="card-header p-0">
+            <MenuBar {editor} />
+        </div>
+        {/if}
+        <div class="card-body" bind:this={element}></div>
+        <div bind:this={contentElement} style="display: none;">
+            <slot></slot>
+        </div>
     </div>
-    {/if}
-    <div class="card-body" bind:this={element}></div>
-    <!-- Hidden div to hold the slot content -->
-    <div bind:this={contentElement} style="display: none;">
-        <slot></slot>
-    </div>
-</div>
+    

@@ -2,6 +2,7 @@
 
 // resources/js/Components/UI/Datatable/Datatable.svelte
 
+    import { t } from 'svelte-i18n';
     import { onMount } from 'svelte';
     import axios from 'axios';
     import Pagination from './Pagination.svelte';
@@ -146,16 +147,28 @@
 <!-- Outer Wrapper -->
 <div class="datatable-wrapper">
     <div class="datatable-controls d-flex justify-content-between align-items-center">
-        <div class="d-flex justify-content-start align-items-center">
+        <div class="d-flex justify-content-start align-items-center btn-group">
             {#if datatableControls?.pageLength?.enabled}
                 <PageLength {limit} on:change={handlePageLengthChange} />
             {/if}
             <button 
-                class="btn btn-outline-secondary w-auto ms-3" 
+                class="btn btn-outline-secondary w-auto" 
                 type="button" 
                 on:click={toggleCollapse}
+                data-bs-toggle="tooltip"
+                title="{$t('Filter')}"
             >
                 <i class="bi bi-funnel"></i>
+            </button>
+            <!-- Refresh Button -->
+            <button 
+                class="btn btn-outline-secondary w-auto" 
+                type="button" 
+                on:click={() => fetchData(currentPage)}
+                data-bs-toggle="tooltip"
+                title="{$t('Refresh')}"
+            >
+                <i class="bi bi-arrow-clockwise"></i> 
             </button>
         </div>
         {#if datatableControls?.search?.enabled}

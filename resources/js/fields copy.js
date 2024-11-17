@@ -1,5 +1,5 @@
 import { showToast, handleCallbackMessages } from './Scripts/toasts';
-import { addNonBlockingSpinner, removeNonBlockingSpinner } from './loading';
+import { addNonBlockingSpinner, removeNonBlockingSpinner } from './Scripts/loading';
 
 document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', function (e) {

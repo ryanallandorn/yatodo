@@ -79,4 +79,7 @@ Route::prefix('get')->group(function () {
 
 Route::prefix('put')->group(function () {
     Route::put('/task/{task}', [TaskController::class, 'update'])->name('api.update.task');
+    Route::put('/task/{task}/{fieldName}', [TaskController::class, 'updateFieldSingle'])
+    ->name('api.update.taskFieldSingle');
+
 });

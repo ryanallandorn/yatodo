@@ -46,7 +46,7 @@
     const formRoute = task ? route('tasks.update') : route('tasks.store');
 
     const submit = () => {
-        console.log('Form values before submission:', $form);
+        //console.log('Form values before submission:', $form);
         //ray($form).label('Form Data'); 
 
         $form.post(route('tasks.store'), {
@@ -59,7 +59,7 @@
 
     // Expose the submit function to the parent
     export function externalSubmit() {
-        alert('called externalSubmit');
+        //alert('called externalSubmit');
         submit();
     }
 

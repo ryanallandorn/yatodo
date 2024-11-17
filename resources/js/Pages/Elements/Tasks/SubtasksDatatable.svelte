@@ -4,7 +4,7 @@
 
 // resources/js/Pages/Elements/Tasks/SubtasksDatatable.svelte
 
-import { t } from 'svelte-i18n';
+    import { t } from 'svelte-i18n';
     import { useForm } from "@inertiajs/svelte";
     import { tick } from 'svelte';
     import App from "@layouts/App.svelte";
@@ -20,10 +20,10 @@ import { t } from 'svelte-i18n';
     import CollapseRow from '@components/UI/Datatable/Cells/CollapseRow.svelte';
     import SubtasksDatatable from '@pages/Elements/Tasks/SubtasksDatatable.svelte';
     import LinkViewModal from '@pages/Elements/Tasks/Show/Modal.svelte';
+    import FieldInlineCompleteSwitch from '@components/Fields/Inline/Switch.svelte'; 
 
-export let data;
-export let parentItem;
-
+    export let data;
+    export let parentItem;
 
     // Define columns with labels
     const columns = [
@@ -31,6 +31,24 @@ export let parentItem;
         //     key: 'id', 
         //     label: 'ID' 
         // },
+        {
+            key: 'completed',
+            label: 'Completed',
+            render: {
+                component: FieldInlineCompleteSwitch,
+                props: {
+                    apiPutRoute: (item) => route('api.update.taskFieldSingle', { 
+                        task: item.id,
+                        fieldName: "completed"
+                    }), // API route for update
+                    item: (item) => item, // Pass the whole item
+                    fieldName: 'completed', // Field name to update
+                    fieldValue: (item) => !!item.completed, // Ensure fieldValue is a boolean
+                    label: '', // Complete
+                    id: (item) => `task-completed-switch-${item.id}`
+                }
+            }
+        },
         { 
             key: 'name', 
             label: 'Name', 
