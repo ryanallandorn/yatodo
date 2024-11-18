@@ -6,7 +6,7 @@ import BtnToggleCollapse from '@components/UI/States/BtnToggleCollapse.svelte';
 import { kebabCase } from 'lodash';
 
 
-    let sidebarNav = [
+    let sidebarNavTop = [
         {
             name: 'Dashboard',
             icon: 'bi bi-speedometer2', //  // 'ri-briefcase-line'
@@ -66,6 +66,22 @@ import { kebabCase } from 'lodash';
         }
     ];
 
+    let sidebarNavBottom = [
+        {
+            name: 'Settings',
+            icon: 'bi bi-speedometer2', //  // 'ri-briefcase-line'
+            link: '/',
+            children: []
+        },
+        {
+            name: 'Users',
+            icon: 'bi bi-people',
+            link: route('users.index'),
+            //: '/projects',
+            children: []
+        },
+    ];
+
     let currentRoute = '/'; // You can replace this with a reactive store or function to track the current route
 </script>
 
@@ -77,7 +93,7 @@ import { kebabCase } from 'lodash';
         </div>
         <div class="offcanvas-body d-md-flex flex-column p-0 h-100">
             <ul class="nav flex-column">
-                {#each sidebarNav as navItem}
+                {#each sidebarNavTop as navItem}
                     <li class="nav-item position-relative {navItem.children?.length > 0 ? 'has-children' : ''}">
                         <a class="nav-link d-flex align-items-center gap-2 text-light {navItem.link === currentRoute ? 'active' : ''}" href={navItem.link}>
                             <i class={`nav-icon ${navItem.icon} d-flex`}></i>
@@ -120,19 +136,44 @@ import { kebabCase } from 'lodash';
                 {/each}
             </ul>
 
-            <div class="sidebar-bottom mt-auto position-relative">
+            <!-- <div class="sidebar-bottom mt-auto position-relative">
                 <ul class="nav flex-column mb-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link d-flex align-items-center gap-2 active dropdown-toggle" href="#" id="settingsDropdown" role="button" aria-expanded="false">
                             <i class="bi bi-gear"></i>
-                            <span class="nav-text d-flex shrink-hide">Settings</span>
+                            <span class="nav-text d-flex shrink-hide">farSettings</span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
                             <li><a class="dropdown-item" href="/settings/etl/api-calls">API Calls</a></li>
                         </ul>
                     </li>
                 </ul>
+            </div> -->
+
+            <div class="sidebar-bottom mt-auto position-relative">
+                <ul class="nav flex-column mb-auto">
+                    <li class="nav-item dropdown dropup"> <!-- Added 'dropup' class here -->
+                        <a class="nav-link d-flex align-items-center gap-2 active dropdown-toggle" href="#" id="settingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear"></i>
+                            <span class="nav-text d-flex shrink-hide">Settings</span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="settingsDropdown">
+                            {#each sidebarNavBottom as navItem}
+                            <li>
+                                <a class="nav-link d-flex align-items-center gap-2 text-light {navItem.link === currentRoute ? 'active' : ''}" href={navItem.link}>
+                                    <i class={`nav-icon ${navItem.icon} d-flex`}></i>
+                                    <span class="nav-text d-flex shrink-hide">{navItem.name}</span>
+                                </a>
+                            </li>
+                            {/each}
+                        </ul>
+                    </li>
+
+                </ul>
             </div>
+            
+
+
         </div>
     </div>
     <BtnToggleCollapse />

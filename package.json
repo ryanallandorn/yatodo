@@ -63,6 +63,7 @@
     "svelte-i18n": "^4.0.0",
     "tippy.js": "^6.3.7",
     "vite-plugin-compression": "^0.5.1",
+    "y-websocket": "^2.0.4",
     "yjs": "^13.6.20",
     "ziggy-js": "^2.3.0"
   },

@@ -15,6 +15,7 @@ use App\Models\PersonalAccessToken;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\SessionController;
 
 /*
@@ -58,14 +59,21 @@ Route::get('/api-tokens/{token}', function ($token) {
 
 Route::prefix('get')->group(function () {
 
-    Route::get('/users', [UserController::class, 'apiGet'])->name('api.get.users');
+    // Users
+    Route::get('/users', [UserController::class, 'apiGetMultiple'])->name('api.get.users');
+
+    // Projects
     Route::get('/projects', [ProjectController::class, 'apiGetMultiple'])->name('api.get.projects');
     Route::get('/projects/{id}', [ProjectController::class, 'apiGetSingle'])->name('api.get.project');
 
-    //
+    // Tasks
     Route::get('/tasks', [TaskController::class, 'apiGetMultiple'])->name('api.get.tasks');
     Route::get('/task/{id}', [TaskController::class, 'apiGetSingle'])->name('api.get.task');
 
+    // Notes
+    Route::get('/notes', [NoteController::class, 'apiGetMultiple'])->name('api.get.notes');
+    Route::get('/note/{id}', [NoteController::class, 'apiGetSingle'])->name('api.get.note');
+    // Documentation
 
 
     // Route::post('/get/tasks', [TaskController::class, 'store']);
@@ -78,8 +86,17 @@ Route::prefix('get')->group(function () {
 });
 
 Route::prefix('put')->group(function () {
+
+    // mayb ehave array look on base / controler /task/ TaskCongtrolelr
+
+    //
     Route::put('/task/{task}', [TaskController::class, 'update'])->name('api.update.task');
     Route::put('/task/{task}/{fieldName}', [TaskController::class, 'updateFieldSingle'])
     ->name('api.update.taskFieldSingle');
+
+    //
+    Route::put('/note/{note}', [NoteController::class, 'update'])->name('api.update.note');
+    Route::put('/note/{note}/{fieldName}', [NoteController::class, 'updateFieldSingle'])
+    ->name('api.update.noteFieldSingle');
 
 });
